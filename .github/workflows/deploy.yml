@@ -78,17 +78,22 @@ jobs:
 
       # ── 6. Update runtime ──────────────────────────────────────
       - name: Update AgentBase runtime
+        env:
+          LLM_API_KEY_VAL:   ${{ secrets.LLM_API_KEY }}
+          GOOGLE_CREDS_VAL:  ${{ secrets.GOOGLE_CREDENTIALS }}
+          CR_USER_VAL:       ${{ steps.cr.outputs.username }}
+          CR_PASS_VAL:       ${{ steps.cr.outputs.password }}
         run: |
           IMAGE="${{ env.REGISTRY }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
           PAYLOAD=$(jq -n \
             --arg imageUrl    "$IMAGE" \
-            --arg crUser      "${{ steps.cr.outputs.username }}" \
-            --arg crPass      "${{ steps.cr.outputs.password }}" \
+            --arg crUser      "$CR_USER_VAL" \
+            --arg crPass      "$CR_PASS_VAL" \
             --arg flavorId    "${{ env.FLAVOR_ID }}" \
-            --arg llmApiKey   "${{ secrets.LLM_API_KEY }}" \
+            --arg llmApiKey   "$LLM_API_KEY_VAL" \
             --arg llmBaseUrl  "${{ env.LLM_BASE_URL }}" \
             --arg llmModel    "${{ env.LLM_MODEL }}" \
-            --arg googleCreds "${{ secrets.GOOGLE_CREDENTIALS }}" \
+            --arg googleCreds "$GOOGLE_CREDS_VAL" \
             '{
               description: "",
               imageUrl: $imageUrl,
