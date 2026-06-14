@@ -23,8 +23,8 @@ CACHE_TTL  = 86400  # 24 giờ
 # ── Google Sheets config ──────────────────────────────────────────────────────
 SHEET_ID      = "1kvoprjTNCPo4wPcD9qk5BoA-n7oG5Eup"
 TAB_NAME      = "CT ĐANG DIỄN RA"
-CREDS_ENV     = "GOOGLE_CREDENTIALS_PATH"
-CREDS_DEFAULT = os.path.join(os.path.dirname(__file__), "google-credentials.json")
+CREDS_ENV     = "GOOGLE_CREDENTIALS"          # JSON string (production)
+CREDS_FILE    = os.path.join(os.path.dirname(__file__), "google-credentials.json")  # fallback local
 
 # ── Cột trong sheet (0-indexed) ──────────────────────────────────────────────
 COL_MKT_CODE   = 1
@@ -231,14 +231,17 @@ def _fetch_from_api() -> list[dict]:
     from googleapiclient.discovery import build
     import openpyxl
 
-    creds_path = os.environ.get(CREDS_ENV, CREDS_DEFAULT)
-    creds = service_account.Credentials.from_service_account_file(
-        creds_path,
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets.readonly",
-            "https://www.googleapis.com/auth/drive.readonly",
-        ],
-    )
+    SCOPES = [
+        "https://www.googleapis.com/auth/spreadsheets.readonly",
+        "https://www.googleapis.com/auth/drive.readonly",
+    ]
+
+    creds_json = os.environ.get(CREDS_ENV)
+    if creds_json:
+        creds_info = json.loads(creds_json)
+        creds = service_account.Credentials.from_service_account_info(creds_info, scopes=SCOPES)
+    else:
+        creds = service_account.Credentials.from_service_account_file(CREDS_FILE, scopes=SCOPES)
     drive = build("drive", "v3", credentials=creds)
     raw   = drive.files().get_media(fileId=SHEET_ID).execute()
     wb    = openpyxl.load_workbook(io.BytesIO(raw), data_only=True)

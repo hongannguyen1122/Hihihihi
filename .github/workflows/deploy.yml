@@ -83,6 +83,7 @@ jobs:
             --arg llmApiKey   "${{ secrets.LLM_API_KEY }}" \
             --arg llmBaseUrl  "${{ env.LLM_BASE_URL }}" \
             --arg llmModel    "${{ env.LLM_MODEL }}" \
+            --arg googleCreds "${{ secrets.GOOGLE_CREDENTIALS }}" \
             '{
               description: "",
               imageUrl: $imageUrl,
@@ -90,10 +91,11 @@ jobs:
               command: [],
               args: [],
               environmentVariables: {
-                LLM_API_KEY:   $llmApiKey,
-                LLM_BASE_URL:  $llmBaseUrl,
-                LLM_MODEL:     $llmModel,
-                PORT:          "8080"
+                LLM_API_KEY:          $llmApiKey,
+                LLM_BASE_URL:         $llmBaseUrl,
+                LLM_MODEL:            $llmModel,
+                GOOGLE_CREDENTIALS:   $googleCreds,
+                PORT:                 "8080"
               },
               flavorId: $flavorId,
               autoscaling: {
