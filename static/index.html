@@ -1,497 +1,495 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ZaloPay CS Promotion Assistant</title>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zalopay CS Assistant</title>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
 
-    :root {
-      --blue:       #0068FF;
-      --blue-dark:  #0052cc;
-      --blue-light: #e8f0fe;
-      --green:      #52c41a;
-      --red:        #ff4d4f;
-      --gray-1:     #f5f5f5;
-      --gray-2:     #e8e8e8;
-      --gray-3:     #999;
-    }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #f0f2f5;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
 
-    html, body { height: 100%; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif; background: #eef2f7; }
+  .container {
+    width: 100%;
+    max-width: 820px;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    box-shadow: 0 0 40px rgba(0,0,0,0.12);
+  }
 
-    #app {
-      height: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      background: white;
-      box-shadow: 0 0 24px rgba(0,0,0,0.08);
-    }
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #00B14F 0%, #007a36 100%);
+    color: #fff;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0;
+  }
+  .header-icon {
+    width: 40px; height: 40px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px;
+  }
+  .header-info h1 { font-size: 16px; font-weight: 600; }
+  .header-info p { font-size: 12px; opacity: 0.85; margin-top: 2px; }
+  .header-actions { margin-left: auto; display: flex; gap: 8px; }
+  .btn-new {
+    background: rgba(255,255,255,0.2);
+    border: 1px solid rgba(255,255,255,0.4);
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+  }
+  .btn-new:hover { background: rgba(255,255,255,0.35); }
 
-    /* ── Header ── */
-    .header {
-      background: var(--blue);
-      color: white;
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-shrink: 0;
-    }
-    .header-left { display: flex; align-items: center; gap: 12px; }
-    .header-icon { width: 36px; height: 36px; background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; }
-    .header h1 { font-size: 15px; font-weight: 600; }
-    .header p  { font-size: 12px; opacity: 0.85; margin-top: 1px; }
-    .btn-new {
-      background: rgba(255,255,255,0.18);
-      border: 1px solid rgba(255,255,255,0.4);
-      color: white;
-      padding: 6px 14px;
-      border-radius: 20px;
-      cursor: pointer;
-      font-size: 13px;
-    }
-    .btn-new:hover { background: rgba(255,255,255,0.28); }
+  /* Session badge */
+  .session-bar {
+    background: #f7f9fc;
+    border-bottom: 1px solid #e8edf2;
+    padding: 6px 20px;
+    font-size: 12px;
+    color: #888;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .session-id { font-family: monospace; color: #0068FF; }
 
-    /* ── Chat area ── */
-    .chat-area {
-      flex: 1;
-      overflow-y: auto;
-      padding: 20px 20px 8px;
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
+  /* Messages */
+  .messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
 
-    /* ── Messages ── */
-    .msg { display: flex; gap: 10px; align-items: flex-end; }
-    .msg.user { flex-direction: row-reverse; }
+  .msg { display: flex; gap: 10px; max-width: 100%; }
+  .msg.user { flex-direction: row-reverse; }
 
-    .avatar {
-      width: 30px; height: 30px;
-      border-radius: 50%;
-      flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 700; letter-spacing: 0.3px;
-    }
-    .avatar.ai   { background: var(--blue);  color: white; }
-    .avatar.user { background: var(--green); color: white; }
+  .avatar {
+    width: 34px; height: 34px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 15px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .msg.ai .avatar   { background: #e8f7ef; }
+  .msg.user .avatar { background: #00B14F; color: #fff; }
 
-    .bubble {
-      max-width: 70%;
-      padding: 10px 14px;
-      border-radius: 18px;
-      font-size: 14px;
-      line-height: 1.6;
-      word-break: break-word;
-    }
-    .bubble.ai   { background: var(--gray-1); border-bottom-left-radius: 4px; }
-    .bubble.user { background: var(--blue); color: white; border-bottom-right-radius: 4px; }
+  .bubble {
+    max-width: 78%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.6;
+    word-break: break-word;
+  }
+  .msg.ai   .bubble { background: #f0faf4; border-top-left-radius: 4px; color: #1a1a2e; }
+  .msg.user .bubble { background: #00B14F; border-top-right-radius: 4px; color: #fff; }
 
-    .bubble img.thumb {
-      display: block;
-      max-width: 100%;
-      max-height: 280px;
-      object-fit: contain;
-      border-radius: 8px;
-      margin-top: 8px;
-      cursor: zoom-in;
-      border: 1px solid rgba(255,255,255,0.3);
-    }
+  /* Markdown inside bubble */
+  .bubble h3 { font-size: 14px; margin: 8px 0 4px; }
+  .bubble p  { margin: 4px 0; }
+  .bubble ul, .bubble ol { padding-left: 18px; margin: 4px 0; }
+  .bubble li { margin: 2px 0; }
+  .bubble code {
+    background: rgba(0,0,0,0.08);
+    padding: 1px 5px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 13px;
+  }
+  .bubble pre {
+    background: rgba(0,0,0,0.06);
+    padding: 10px;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 6px 0;
+    font-size: 13px;
+    white-space: pre-wrap;
+  }
+  .bubble strong { font-weight: 600; }
+  .bubble hr { border: none; border-top: 1px solid rgba(0,0,0,0.1); margin: 8px 0; }
+  .bubble table { border-collapse: collapse; width: 100%; margin: 6px 0; font-size: 13px; }
+  .bubble th, .bubble td { border: 1px solid #c8e6d4; padding: 5px 8px; text-align: left; }
+  .bubble th { background: rgba(0,177,79,0.08); }
+  .msg.user .bubble code { background: rgba(255,255,255,0.2); }
+  .msg.user .bubble pre  { background: rgba(255,255,255,0.15); }
 
-    /* Markdown in AI bubbles */
-    .bubble.ai p            { margin-bottom: 8px; }
-    .bubble.ai p:last-child { margin-bottom: 0; }
-    .bubble.ai ul, .bubble.ai ol { padding-left: 20px; margin: 4px 0; }
-    .bubble.ai li           { margin-bottom: 3px; }
-    .bubble.ai code         { background: #e8e8e8; padding: 1px 5px; border-radius: 4px; font-size: 12.5px; font-family: 'SF Mono', Consolas, monospace; }
-    .bubble.ai pre          { background: #efefef; padding: 10px; border-radius: 8px; overflow-x: auto; margin: 8px 0; }
-    .bubble.ai pre code     { background: none; padding: 0; }
-    .bubble.ai hr           { border: none; border-top: 1px solid #ddd; margin: 10px 0; }
-    .bubble.ai h1, .bubble.ai h2, .bubble.ai h3 { font-size: 14px; font-weight: 700; margin: 8px 0 4px; }
-    .bubble.ai strong       { font-weight: 600; }
-    .bubble.ai blockquote   { border-left: 3px solid var(--blue); padding-left: 10px; color: #555; margin: 6px 0; }
+  .timestamp {
+    font-size: 11px;
+    color: #aaa;
+    margin-top: 4px;
+    text-align: right;
+  }
+  .msg.ai .timestamp { text-align: left; }
 
-    /* Loading dots */
-    .dots { display: inline-flex; gap: 4px; align-items: center; padding: 2px 0; }
-    .dots span { width: 7px; height: 7px; background: var(--gray-3); border-radius: 50%; animation: dot-bounce 1.2s infinite; }
-    .dots span:nth-child(2) { animation-delay: 0.2s; }
-    .dots span:nth-child(3) { animation-delay: 0.4s; }
-    @keyframes dot-bounce {
-      0%, 60%, 100% { transform: translateY(0); }
-      30%           { transform: translateY(-5px); }
-    }
+  /* Typing indicator */
+  .typing .bubble {
+    padding: 12px 16px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .dot {
+    width: 7px; height: 7px;
+    background: #00B14F;
+    border-radius: 50%;
+    animation: bounce 1.2s infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.2s; }
+  .dot:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+    30% { transform: translateY(-6px); opacity: 1; }
+  }
 
-    /* ── Image preview strip ── */
-    .preview-strip {
-      display: none;
-      padding: 6px 16px 4px;
-      border-top: 1px solid var(--gray-2);
-    }
-    .preview-strip.visible { display: flex; align-items: center; gap: 10px; }
+  /* Input area */
+  .input-area {
+    padding: 14px 16px;
+    border-top: 1px solid #e8edf2;
+    background: #fff;
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    flex-shrink: 0;
+  }
+  textarea {
+    flex: 1;
+    border: 1.5px solid #d0d8e8;
+    border-radius: 20px;
+    padding: 10px 16px;
+    font-size: 14px;
+    font-family: inherit;
+    resize: none;
+    outline: none;
+    max-height: 140px;
+    min-height: 42px;
+    line-height: 1.5;
+    transition: border 0.2s;
+  }
+  textarea:focus { border-color: #00B14F; }
+  textarea::placeholder { color: #b0b8c8; }
 
-    .preview-wrap { position: relative; display: inline-block; }
-    .preview-wrap img { height: 68px; border-radius: 8px; border: 2px solid var(--blue); display: block; }
-    .preview-remove {
-      position: absolute; top: -7px; right: -7px;
-      width: 20px; height: 20px;
-      background: var(--red); border: 2px solid white; border-radius: 50%;
-      cursor: pointer; color: white; font-size: 11px; font-weight: bold;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .preview-label { font-size: 12px; color: var(--gray-3); }
+  .btn-send {
+    width: 42px; height: 42px;
+    background: #00B14F;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.2s, transform 0.1s;
+  }
+  .btn-send:hover  { background: #009140; }
+  .btn-send:active { transform: scale(0.93); }
+  .btn-send:disabled { background: #99d4b8; cursor: not-allowed; }
+  .btn-send svg { width: 18px; height: 18px; fill: #fff; }
 
-    /* ── Input bar ── */
-    .input-bar { border-top: 1px solid var(--gray-2); padding: 12px 16px; flex-shrink: 0; }
-    .input-row { display: flex; gap: 8px; align-items: flex-end; }
+  /* Error message */
+  .error-bubble {
+    background: #fff0f0 !important;
+    border: 1px solid #ffd0d0;
+    color: #cc3333 !important;
+  }
 
-    .btn-attach {
-      width: 38px; height: 38px;
-      border: 1px solid var(--gray-2);
-      background: white; border-radius: 50%;
-      cursor: pointer; font-size: 17px; color: #555;
-      flex-shrink: 0; display: flex; align-items: center; justify-content: center;
-      transition: border-color 0.2s, background 0.2s;
-    }
-    .btn-attach:hover          { border-color: var(--blue); background: var(--blue-light); }
-    .btn-attach.active         { border-color: var(--blue); background: var(--blue-light); }
+  /* Quick prompts */
+  .quick-prompts {
+    padding: 6px 20px 10px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+    border-top: 1px solid #f0f4f8;
+    min-height: 38px;
+  }
+  .chip {
+    background: #f0faf4;
+    border: 1px solid #b3e6c8;
+    color: #00874a;
+    padding: 4px 11px;
+    border-radius: 20px;
+    font-size: 12px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+    white-space: nowrap;
+    max-width: 260px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .chip:hover { background: #d0f0e0; border-color: #00B14F; }
 
-    #msgInput {
-      flex: 1;
-      border: 1px solid var(--gray-2);
-      border-radius: 20px;
-      padding: 8px 16px;
-      font-size: 14px;
-      font-family: inherit;
-      resize: none;
-      min-height: 38px;
-      max-height: 120px;
-      outline: none;
-      line-height: 1.5;
-      overflow-y: auto;
-      transition: border-color 0.2s;
-    }
-    #msgInput:focus { border-color: var(--blue); }
-    #msgInput::placeholder { color: var(--gray-3); }
-
-    .btn-send {
-      width: 38px; height: 38px;
-      background: var(--blue); border: none; border-radius: 50%;
-      cursor: pointer; flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      transition: background 0.2s, opacity 0.2s;
-    }
-    .btn-send:hover:not(:disabled) { background: var(--blue-dark); }
-    .btn-send:disabled { opacity: 0.35; cursor: default; }
-    .btn-send svg { width: 18px; height: 18px; fill: white; }
-
-    .input-hint { font-size: 11px; color: var(--gray-3); margin-top: 6px; padding-left: 2px; }
-
-    /* ── Drag-over overlay ── */
-    #app.drag-over::after {
-      content: "Thả ảnh vào đây";
-      position: fixed; inset: 0;
-      background: rgba(0,104,255,0.12);
-      border: 3px dashed var(--blue);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 22px; color: var(--blue); font-weight: 600;
-      pointer-events: none; z-index: 10;
-    }
-
-    /* ── Lightbox ── */
-    .lightbox {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(0,0,0,0.85);
-      z-index: 200;
-      align-items: center; justify-content: center;
-      cursor: zoom-out;
-    }
-    .lightbox.open { display: flex; }
-    .lightbox img { max-width: 92vw; max-height: 92vh; border-radius: 8px; object-fit: contain; }
-  </style>
+  /* Scrollbar */
+  .messages::-webkit-scrollbar { width: 5px; }
+  .messages::-webkit-scrollbar-thumb { background: #c8e6d4; border-radius: 4px; }
+</style>
 </head>
 <body>
-<div id="app">
+<div class="container">
 
   <!-- Header -->
   <div class="header">
-    <div class="header-left">
-      <div class="header-icon">💙</div>
-      <div>
-        <h1>ZaloPay CS Promotion Assistant</h1>
-        <p>Xử lý ticket CTKM · Session: <span id="sessionTag">—</span></p>
-      </div>
+    <div class="header-icon">💬</div>
+    <div class="header-info">
+      <h1>Zalopay CS Promotion Assistant</h1>
+      <p>AI hỗ trợ xử lý ticket chương trình khuyến mãi</p>
     </div>
-    <button class="btn-new" onclick="newSession()">🔄 Session mới</button>
+    <div class="header-actions">
+      <button class="btn-new" onclick="newSession()">🔄 Cuộc hội thoại mới</button>
+    </div>
   </div>
 
-  <!-- Chat -->
-  <div class="chat-area" id="chatArea"></div>
-
-  <!-- Image preview strip -->
-  <div class="preview-strip" id="previewStrip">
-    <div class="preview-wrap">
-      <img id="previewImg" src="" alt="">
-      <div class="preview-remove" onclick="removeImage()" title="Xóa ảnh">×</div>
-    </div>
-    <div class="preview-label">📎 Screenshot sẽ được gửi kèm</div>
+  <!-- Session bar -->
+  <div class="session-bar">
+    🔑 Session: <span class="session-id" id="sessionId"></span>
+    <span id="statusDot" style="margin-left:auto; display:flex; align-items:center; gap:4px;">
+      <span style="width:7px;height:7px;background:#22c55e;border-radius:50%;display:inline-block"></span>
+      <span style="font-size:12px;color:#555">Agent đang hoạt động</span>
+    </span>
   </div>
+
+  <!-- Messages -->
+  <div class="messages" id="messages"></div>
+
+  <!-- Quick prompts (shown only at start, populated dynamically) -->
+  <div class="quick-prompts" id="quickPrompts"></div>
 
   <!-- Input -->
-  <div class="input-bar">
-    <div class="input-row">
-      <input type="file" id="fileInput" accept="image/*" style="display:none">
-      <button class="btn-attach" id="btnAttach" title="Đính kèm ảnh (hoặc Ctrl+V paste, kéo thả)">📎</button>
-      <textarea id="msgInput"
-        placeholder="Mô tả vấn đề của khách... (Enter gửi · Shift+Enter xuống dòng)"
-        rows="1"></textarea>
-      <button class="btn-send" id="btnSend" title="Gửi (Enter)">
-        <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-      </button>
-    </div>
-    <div class="input-hint">📎 Đính kèm · Ctrl+V Paste ảnh · Kéo thả ảnh vào cửa sổ · Shift+Enter xuống dòng</div>
+  <div class="input-area">
+    <textarea id="input" placeholder="Mô tả vấn đề khách hàng... (Shift+Enter xuống dòng)" rows="1"
+      onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button class="btn-send" id="sendBtn" onclick="sendMessage()" title="Gửi">
+      <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+    </button>
   </div>
 </div>
 
-<!-- Lightbox -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-  <img id="lightboxImg" src="" alt="">
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/marked@12/marked.min.js"></script>
 <script>
-// ── Config ────────────────────────────────────────────────────────────────────
-const API_URL = '/invocations';
+const ENDPOINT = "";
 
-marked.use({ breaks: true, gfm: true });
+let sessionId = "";
+let isLoading = false;
 
-// ── State ─────────────────────────────────────────────────────────────────────
-let sessionId  = '';
-let pendingImg = null; // { dataUrl: string }
-let sending    = false;
+// ── Chip defaults (fallback khi chưa có recent data) ─────────
+const DEFAULT_CHIPS = [
+  { label: '🛒 ZLPMUASAM - không được giảm giá',
+    text: 'Khách mua Go! App đơn 850.000đ, nhập mã ZLPMUASAM nhưng không được giảm giá. Giao dịch ngày hôm nay.' },
+  { label: '🎮 GAMEVERSE - chưa nhận mã dự thưởng',
+    text: 'Khách thanh toán game qua ZaloPay 60.000đ nhưng chưa nhận được mã dự thưởng GAMEVERSE.' },
+  { label: '💰 CASHBACK - chưa nhận tiền hoàn',
+    text: 'Khách thanh toán hóa đơn điện 350.000đ bằng ví ZaloPay nhưng sau 24h vẫn chưa nhận được tiền hoàn.' },
+];
 
-// ── Bootstrap ─────────────────────────────────────────────────────────────────
-(function init() {
-  sessionId = localStorage.getItem('zp_cs_session') || makeSession();
-  updateSessionTag();
-  appendWelcome();
+// ── Init ─────────────────────────────────────────────────────
+function generateId() {
+  return 'cs-' + Math.random().toString(36).slice(2, 10);
+}
 
-  // File picker
-  const fileInput = document.getElementById('fileInput');
-  fileInput.addEventListener('change', e => { if (e.target.files[0]) loadFile(e.target.files[0]); e.target.value = ''; });
-  document.getElementById('btnAttach').addEventListener('click', () => fileInput.click());
+async function loadRecentChips() {
+  const container = document.getElementById('quickPrompts');
+  container.innerHTML = '';
 
-  // Textarea
-  const ta = document.getElementById('msgInput');
-  ta.addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doSend(); } });
-  ta.addEventListener('input',   () => { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 120) + 'px'; });
-  ta.addEventListener('paste',   onPaste);
+  let recents = [];
+  try {
+    const res = await fetch('/api/recent');
+    if (res.ok) recents = await res.json();
+  } catch (_) {}
 
-  // Send button
-  document.getElementById('btnSend').addEventListener('click', doSend);
+  const chips = recents.length > 0
+    ? recents.map(r => ({
+        label: `🕐 ${r.mkt_code}${r.name ? ' — ' + r.name : ''}`,
+        text: `Khách gặp vấn đề với CTKM ${r.mkt_code}${r.name ? ' (' + r.name + ')' : ''}. `,
+        meta: r.period ? r.period : ''
+      }))
+    : DEFAULT_CHIPS;
 
-  // Drag-drop on #app
-  const app = document.getElementById('app');
-  app.addEventListener('dragover',  e => { e.preventDefault(); app.classList.add('drag-over'); });
-  app.addEventListener('dragleave', e => { if (!app.contains(e.relatedTarget)) app.classList.remove('drag-over'); });
-  app.addEventListener('drop', e => {
-    e.preventDefault(); app.classList.remove('drag-over');
-    const file = e.dataTransfer.files[0];
-    if (file && file.type.startsWith('image/')) loadFile(file);
+  chips.forEach(chip => {
+    const el = document.createElement('span');
+    el.className = 'chip';
+    el.title = chip.meta || chip.text;
+    el.textContent = chip.label;
+    el.onclick = () => {
+      document.getElementById('input').value = chip.text;
+      autoResize(document.getElementById('input'));
+      document.getElementById('input').focus();
+    };
+    container.appendChild(el);
   });
 
-  // Escape closes lightbox
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
-
-  ta.focus();
-})();
-
-// ── Session ───────────────────────────────────────────────────────────────────
-function makeSession() {
-  const id = 'cs-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-  localStorage.setItem('zp_cs_session', id);
-  return id;
-}
-function updateSessionTag() {
-  document.getElementById('sessionTag').textContent = sessionId.slice(-8);
-}
-function newSession() {
-  if (sending) return;
-  sessionId = makeSession();
-  updateSessionTag();
-  document.getElementById('chatArea').innerHTML = '';
-  removeImage();
-  appendWelcome();
-  document.getElementById('msgInput').focus();
-}
-
-// ── Image ─────────────────────────────────────────────────────────────────────
-function loadFile(file) {
-  const reader = new FileReader();
-  reader.onload = e => setImage(e.target.result);
-  reader.readAsDataURL(file);
-}
-
-function onPaste(e) {
-  const items = e.clipboardData?.items || [];
-  for (const item of items) {
-    if (item.type.startsWith('image/')) {
-      e.preventDefault();
-      loadFile(item.getAsFile());
-      return;
-    }
+  // Label nhỏ phía trước nếu có recent data
+  if (recents.length > 0) {
+    const label = document.createElement('span');
+    label.style.cssText = 'font-size:11px;color:#888;align-self:center;white-space:nowrap;margin-right:4px;';
+    label.textContent = '🕐 Tra cứu gần đây:';
+    container.insertBefore(label, container.firstChild);
   }
 }
 
-function setImage(dataUrl) {
-  pendingImg = { dataUrl };
-  document.getElementById('previewImg').src = dataUrl;
-  document.getElementById('previewStrip').classList.add('visible');
-  document.getElementById('btnAttach').classList.add('active');
+async function initSession() {
+  sessionId = generateId();
+  document.getElementById('sessionId').textContent = sessionId;
+  document.getElementById('messages').innerHTML = '';
+  addMessage('ai', `Xin chào! 👋 Tôi là **AI Promotion Assistant** của Zalopay.\n\nHãy mô tả vấn đề khách hàng đang gặp phải (tên CTKM, ngày giao dịch, triệu chứng) để tôi hỗ trợ bạn xử lý ticket.`);
+  document.getElementById('quickPrompts').style.display = 'flex';
+  await loadRecentChips();
 }
 
-function removeImage() {
-  pendingImg = null;
-  document.getElementById('previewImg').src = '';
-  document.getElementById('previewStrip').classList.remove('visible');
-  document.getElementById('btnAttach').classList.remove('active');
+// ── Message rendering ─────────────────────────────────────────
+function now() {
+  return new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
 }
 
-// ── Send ──────────────────────────────────────────────────────────────────────
-async function doSend() {
-  if (sending) return;
+function addMessage(role, text) {
+  const wrap = document.getElementById('messages');
 
-  const ta    = document.getElementById('msgInput');
-  const text  = ta.value.trim();
-  const image = pendingImg; // snapshot before clearing
+  // Hide quick prompts after first user message
+  if (role === 'user') {
+    document.getElementById('quickPrompts').style.display = 'none';
+  }
 
-  if (!text && !image) return;
+  const msg = document.createElement('div');
+  msg.className = `msg ${role}`;
 
-  // Render user bubble
-  appendUserBubble(text, image?.dataUrl ?? null);
+  const avatar = document.createElement('div');
+  avatar.className = 'avatar';
+  avatar.textContent = role === 'ai' ? '🤖' : '👤';
 
-  // Clear inputs
-  ta.value = '';
-  ta.style.height = 'auto';
-  removeImage();
+  const content = document.createElement('div');
 
-  // Build payload — send full data URL so backend preserves mime type
-  const payload = { message: text, session_id: sessionId };
-  if (image) payload.image = image.dataUrl;
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
 
-  // Lock UI
-  sending = true;
-  document.getElementById('btnSend').disabled = true;
-  const loadingEl = appendLoadingBubble();
+  if (role === 'ai') {
+    bubble.innerHTML = marked.parse(text || '');
+  } else {
+    bubble.textContent = text;
+  }
+
+  const ts = document.createElement('div');
+  ts.className = 'timestamp';
+  ts.textContent = now();
+
+  content.appendChild(bubble);
+  content.appendChild(ts);
+  msg.appendChild(avatar);
+  msg.appendChild(content);
+  wrap.appendChild(msg);
+  wrap.scrollTop = wrap.scrollHeight;
+  return msg;
+}
+
+function addTyping() {
+  const wrap = document.getElementById('messages');
+  const msg = document.createElement('div');
+  msg.className = 'msg ai typing';
+  msg.id = 'typing-indicator';
+  msg.innerHTML = `
+    <div class="avatar">🤖</div>
+    <div><div class="bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  wrap.appendChild(msg);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function removeTyping() {
+  const el = document.getElementById('typing-indicator');
+  if (el) el.remove();
+}
+
+// ── Send ──────────────────────────────────────────────────────
+async function sendMessage() {
+  if (isLoading) return;
+  const input = document.getElementById('input');
+  const text = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  autoResize(input);
+  addMessage('user', text);
+  setLoading(true);
+  addTyping();
 
   try {
-    const res = await fetch(API_URL, {
-      method:  'POST',
+    const res = await fetch(`${ENDPOINT}/api/invocations`, {
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body:    JSON.stringify(payload),
+      body: JSON.stringify({ message: text, session_id: sessionId })
     });
 
-    loadingEl.remove();
-
-    if (!res.ok) {
-      const msg = await res.text().catch(() => `HTTP ${res.status}`);
-      appendAIBubble(`❌ Lỗi máy chủ (${res.status}): ${msg}`);
-      return;
-    }
-
     const data = await res.json();
-    appendAIBubble(data.response || '_(Không có phản hồi)_');
+    removeTyping();
+
+    if (data.response) {
+      addMessage('ai', data.response);
+    } else if (data.error) {
+      const errMsg = document.createElement('div');
+      errMsg.className = 'msg ai';
+      errMsg.innerHTML = `<div class="avatar">🤖</div><div><div class="bubble error-bubble">⚠️ Lỗi: ${data.error}</div></div>`;
+      document.getElementById('messages').appendChild(errMsg);
+    } else {
+      addMessage('ai', JSON.stringify(data, null, 2));
+    }
   } catch (err) {
-    loadingEl.remove();
-    appendAIBubble(`❌ Không kết nối được máy chủ: ${err.message}`);
+    removeTyping();
+    const wrap = document.getElementById('messages');
+    const errEl = document.createElement('div');
+    errEl.className = 'msg ai';
+    errEl.innerHTML = `<div class="avatar">🤖</div><div><div class="bubble error-bubble">⚠️ Không kết nối được đến agent. Kiểm tra network và CORS.<br><small>${err.message}</small></div></div>`;
+    wrap.appendChild(errEl);
+    wrap.scrollTop = wrap.scrollHeight;
   } finally {
-    sending = false;
-    document.getElementById('btnSend').disabled = false;
-    document.getElementById('msgInput').focus();
+    setLoading(false);
   }
 }
 
-// ── Render ────────────────────────────────────────────────────────────────────
-function appendWelcome() {
-  appendAIBubble(
-    '**Xin chào!** Tôi là ZaloPay CS Promotion Assistant. 👋\n\n' +
-    'Hãy mô tả vấn đề của khách hàng liên quan đến chương trình khuyến mãi.\n\n' +
-    'Bạn có thể:\n' +
-    '- Nhập mô tả bằng văn bản\n' +
-    '- **Đính kèm screenshot** từ hệ thống (nút 📎, kéo thả, hoặc Ctrl+V)\n' +
-    '- Dùng `/refresh-cache` để cập nhật dữ liệu Google Sheets'
-  );
+function setLoading(v) {
+  isLoading = v;
+  document.getElementById('sendBtn').disabled = v;
+  document.getElementById('input').disabled = v;
 }
 
-function appendUserBubble(text, imageDataUrl) {
-  const area = document.getElementById('chatArea');
-  const row  = mkEl('div', 'msg user');
-  const av   = mkEl('div', 'avatar user'); av.textContent = 'CS';
-  const bub  = mkEl('div', 'bubble user');
+// ── Helpers ───────────────────────────────────────────────────
+function newSession() {
+  if (isLoading) return;
+  initSession();
+  document.getElementById('input').focus();
+}
 
-  if (text) {
-    const p = mkEl('p');
-    p.style.whiteSpace = 'pre-wrap';
-    p.textContent = text;
-    bub.appendChild(p);
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
   }
-
-  if (imageDataUrl) {
-    const img = mkEl('img');
-    img.src       = imageDataUrl;
-    img.className = 'thumb';
-    img.alt       = 'Screenshot';
-    img.title     = 'Nhấn để phóng to';
-    img.addEventListener('click', () => openLightbox(imageDataUrl));
-    bub.appendChild(img);
-  }
-
-  row.appendChild(av);
-  row.appendChild(bub);
-  area.appendChild(row);
-  scrollBottom();
 }
 
-function appendAIBubble(markdown) {
-  const area = document.getElementById('chatArea');
-  const row  = mkEl('div', 'msg ai');
-  const av   = mkEl('div', 'avatar ai'); av.textContent = 'ZP';
-  const bub  = mkEl('div', 'bubble ai');
-  bub.innerHTML = marked.parse(markdown);
-  row.appendChild(av);
-  row.appendChild(bub);
-  area.appendChild(row);
-  scrollBottom();
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
 }
 
-function appendLoadingBubble() {
-  const area = document.getElementById('chatArea');
-  const row  = mkEl('div', 'msg ai');
-  const av   = mkEl('div', 'avatar ai'); av.textContent = 'ZP';
-  const bub  = mkEl('div', 'bubble ai');
-  bub.innerHTML = '<div class="dots"><span></span><span></span><span></span></div>';
-  row.appendChild(av);
-  row.appendChild(bub);
-  area.appendChild(row);
-  scrollBottom();
-  return row;
-}
-
-// ── Lightbox ──────────────────────────────────────────────────────────────────
-function openLightbox(src) {
-  document.getElementById('lightboxImg').src = src;
-  document.getElementById('lightbox').classList.add('open');
-}
-function closeLightbox() {
-  document.getElementById('lightbox').classList.remove('open');
-}
-
-// ── Helpers ───────────────────────────────────────────────────────────────────
-function mkEl(tag, cls) { const el = document.createElement(tag); if (cls) el.className = cls; return el; }
-function scrollBottom()  { const a = document.getElementById('chatArea'); requestAnimationFrame(() => { a.scrollTop = a.scrollHeight; }); }
+// ── Start ─────────────────────────────────────────────────────
+marked.setOptions({ breaks: true, gfm: true });
+initSession().then(() => document.getElementById('input').focus());
 </script>
 </body>
 </html>

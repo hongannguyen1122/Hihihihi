@@ -1,6 +1,4 @@
 import os
-import json
-import base64
 from typing import Annotated, Optional, Any
 from typing_extensions import TypedDict
 
@@ -10,6 +8,7 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.graph.message import add_messages
 from langgraph.prebuilt import ToolNode, tools_condition
 from langgraph.checkpoint.memory import MemorySaver
+from flask import Flask, request, jsonify, send_from_directory
 
 from tools import get_all_tools
 from prompts import SYSTEM_PROMPT, format_recent_block
@@ -27,11 +26,11 @@ try:
 except ImportError:
     pass
 
-try:
-    from greennode_agentbase import GreenNodeAgentBaseApp, RequestContext, PingStatus
-    HAS_GREENNODE = True
-except ImportError:
-    HAS_GREENNODE = False
+
+# ─── Paths ────────────────────────────────────────────────────────────────────
+
+_STATIC_DIR  = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
+_RECENT_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "recent_promotions.json")
 
 
 # ─── State ────────────────────────────────────────────────────────────────────
@@ -40,7 +39,7 @@ class AgentState(TypedDict):
     messages: Annotated[list[BaseMessage], add_messages]
 
 
-# ─── LLM + Tools ──────────────────────────────────────────────────────────────
+# ─── LLM + Graph ──────────────────────────────────────────────────────────────
 
 def build_llm() -> ChatOpenAI:
     return ChatOpenAI(
@@ -51,8 +50,6 @@ def build_llm() -> ChatOpenAI:
         max_tokens=4096,
     )
 
-
-# ─── Graph nodes ──────────────────────────────────────────────────────────────
 
 def make_chatbot_node(llm_with_tools):
     def chatbot(state: AgentState) -> AgentState:
@@ -67,87 +64,14 @@ def make_chatbot_node(llm_with_tools):
 def build_graph(llm: ChatOpenAI, memory: MemorySaver) -> Any:
     tools = get_all_tools()
     llm_with_tools = llm.bind_tools(tools)
-
     graph = StateGraph(AgentState)
-
     graph.add_node("chatbot", make_chatbot_node(llm_with_tools))
     graph.add_node("tools", ToolNode(tools))
-
     graph.add_edge(START, "chatbot")
     graph.add_conditional_edges("chatbot", tools_condition)
     graph.add_edge("tools", "chatbot")
-
     return graph.compile(checkpointer=memory)
 
-
-# ─── Message builder ──────────────────────────────────────────────────────────
-
-def build_user_message(payload: dict) -> HumanMessage:
-    text       = payload.get("message", "").strip()
-    image_data = payload.get("image")
-
-    if image_data:
-        # Accept full data URL (from chat UI) or raw base64 (from API clients)
-        image_url = (
-            image_data if image_data.startswith("data:")
-            else f"data:image/jpeg;base64,{image_data}"
-        )
-        content = []
-        if text:
-            content.append({"type": "text", "text": text})
-        content.append({
-            "type": "image_url",
-            "image_url": {"url": image_url, "detail": "high"},
-        })
-        return HumanMessage(content=content)
-
-    return HumanMessage(content=text or "(Không có nội dung)")
-
-
-def extract_last_response(result: dict) -> str:
-    messages = result.get("messages", [])
-    for msg in reversed(messages):
-        if isinstance(msg, AIMessage) and msg.content:
-            if isinstance(msg.content, str):
-                return msg.content
-            if isinstance(msg.content, list):
-                texts = [c.get("text", "") for c in msg.content if isinstance(c, dict) and c.get("type") == "text"]
-                return "\n".join(texts)
-    return "Không thể tạo phản hồi. Vui lòng thử lại."
-
-
-# ─── Slash command handler ────────────────────────────────────────────────────
-
-def handle_slash_command(text: str) -> Optional[str]:
-    """
-    Kiểm tra xem message có phải slash command không.
-    Trả về response string nếu là command, None nếu cần xử lý bình thường.
-    """
-    cmd = text.strip().lower()
-    if not cmd.startswith("/"):
-        return None
-
-    if cmd.startswith("/refresh-cache"):
-        if not _HAS_SHEETS:
-            return "⚠️ Google Sheets chưa được cài đặt, không có cache để refresh."
-        try:
-            _sr.invalidate_cache()
-            rows = _sr.fetch_sheet_rows()          # warm cache ngay
-            status = _sr.cache_status()
-            return (
-                f"✅ **Cache đã được làm mới thành công.**\n\n"
-                f"- Đã tải **{status['count']} chương trình khuyến mãi** từ Google Sheets\n"
-                f"- Đã lưu vào **file cache** — giữ nguyên khi khởi động lại server\n"
-                f"- Cache hợp lệ trong **24 giờ** tới\n"
-                f"- Dùng `/refresh-cache` bất kỳ lúc nào để cập nhật thủ công"
-            )
-        except Exception as exc:
-            return f"❌ Refresh cache thất bại: {exc}"
-
-    return f"⚠️ Lệnh `{text.strip()}` không được nhận dạng. Lệnh hỗ trợ: `/refresh-cache`"
-
-
-# ─── GreenNode or standalone ──────────────────────────────────────────────────
 
 memory_store = MemorySaver()
 _llm: Optional[ChatOpenAI] = None
@@ -162,75 +86,117 @@ def get_graph() -> Any:
     return _graph
 
 
-if HAS_GREENNODE:
-    app = GreenNodeAgentBaseApp()
+# ─── Message builder ──────────────────────────────────────────────────────────
 
-    @app.entrypoint
-    def handler(payload: dict, context: RequestContext) -> dict:
-        session_id = context.session_id or payload.get("session_id", "default-session")
-        text = payload.get("message", "").strip()
+def build_user_message(payload: dict) -> HumanMessage:
+    text       = payload.get("message", "").strip()
+    image_data = payload.get("image")
+    if image_data:
+        image_url = (
+            image_data if image_data.startswith("data:")
+            else f"data:image/jpeg;base64,{image_data}"
+        )
+        content = []
+        if text:
+            content.append({"type": "text", "text": text})
+        content.append({
+            "type": "image_url",
+            "image_url": {"url": image_url, "detail": "high"},
+        })
+        return HumanMessage(content=content)
+    return HumanMessage(content=text or "(Không có nội dung)")
 
-        cmd_response = handle_slash_command(text)
-        if cmd_response is not None:
-            return {"response": cmd_response, "session_id": session_id}
 
-        user_message = build_user_message(payload)
-        graph = get_graph()
-        config = {"configurable": {"thread_id": session_id}}
-        result = graph.invoke({"messages": [user_message]}, config=config)
-        return {
-            "response": extract_last_response(result),
-            "session_id": session_id,
-        }
+def extract_last_response(result: dict) -> str:
+    messages = result.get("messages", [])
+    for msg in reversed(messages):
+        if isinstance(msg, AIMessage) and msg.content:
+            if isinstance(msg.content, str):
+                return msg.content
+            if isinstance(msg.content, list):
+                texts = [c.get("text", "") for c in msg.content
+                         if isinstance(c, dict) and c.get("type") == "text"]
+                return "\n".join(texts)
+    return "Không thể tạo phản hồi. Vui lòng thử lại."
 
-    @app.ping
-    def health_check() -> PingStatus:
-        return PingStatus.HEALTHY
 
-else:
-    # ── Standalone HTTP server (Flask fallback) ────────────────────────────
-    try:
-        from flask import Flask, request, jsonify, send_from_directory
-        _STATIC_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "static")
-        flask_app = Flask(__name__)
+# ─── Slash command handler ─────────────────────────────────────────────────────
 
-        @flask_app.get("/")
-        def index():
-            return send_from_directory(_STATIC_DIR, "index.html")
-
-        @flask_app.get("/health")
-        def health():
-            return jsonify({"status": "healthy", "agent": "ZaloPay CS Promotion Assistant"})
-
-        @flask_app.post("/invocations")
-        def invocations():
-            payload = request.get_json(force=True) or {}
-            session_id = payload.get("session_id", "default-session")
-            text = payload.get("message", "").strip()
-
-            cmd_response = handle_slash_command(text)
-            if cmd_response is not None:
-                return jsonify({"response": cmd_response, "session_id": session_id})
-
-            user_message = build_user_message(payload)
-            graph = get_graph()
-            config = {"configurable": {"thread_id": session_id}}
-            result = graph.invoke({"messages": [user_message]}, config=config)
-            return jsonify({
-                "response": extract_last_response(result),
-                "session_id": session_id,
-            })
-
-        def run():
-            port = int(os.getenv("PORT", "8080"))
-            flask_app.run(host="0.0.0.0", port=port, debug=False)
-
-    except ImportError:
-        def run():
-            raise RuntimeError(
-                "Neither greennode-agentbase nor flask is installed. "
-                "Install dependencies: pip install -r requirements.txt"
+def handle_slash_command(text: str) -> Optional[str]:
+    cmd = text.strip().lower()
+    if not cmd.startswith("/"):
+        return None
+    if cmd.startswith("/refresh-cache"):
+        if not _HAS_SHEETS:
+            return "⚠️ Google Sheets chưa được cài đặt, không có cache để refresh."
+        try:
+            _sr.invalidate_cache()
+            _sr.fetch_sheet_rows()
+            status = _sr.cache_status()
+            return (
+                f"✅ **Cache đã được làm mới thành công.**\n\n"
+                f"- Đã tải **{status['count']} chương trình khuyến mãi** từ Google Sheets\n"
+                f"- Đã lưu vào **file cache** — giữ nguyên khi khởi động lại server\n"
+                f"- Cache hợp lệ trong **24 giờ** tới\n"
+                f"- Dùng `/refresh-cache` bất kỳ lúc nào để cập nhật thủ công"
             )
+        except Exception as exc:
+            return f"❌ Refresh cache thất bại: {exc}"
+    return f"⚠️ Lệnh `{text.strip()}` không được nhận dạng. Lệnh hỗ trợ: `/refresh-cache`"
+
+
+# ─── Flask app ─────────────────────────────────────────────────────────────────
+
+app = Flask(__name__)
+
+
+@app.get("/")
+def index():
+    return send_from_directory(_STATIC_DIR, "index.html")
+
+
+@app.get("/health")
+def health():
+    return jsonify({"status": "healthy", "agent": "ZaloPay CS Promotion Assistant"})
+
+
+@app.get("/api/recent")
+def api_recent():
+    try:
+        with open(_RECENT_PATH, "r", encoding="utf-8") as f:
+            data = f.read()
+        return app.response_class(data, mimetype="application/json; charset=utf-8")
+    except (FileNotFoundError, OSError):
+        return app.response_class("[]", mimetype="application/json")
+
+
+def _invoke_agent():
+    payload    = request.get_json(force=True) or {}
+    session_id = (
+        request.headers.get("X-GreenNode-AgentBase-Session-Id")
+        or payload.get("session_id", "default-session")
+    )
+    text = payload.get("message", "").strip()
+
+    cmd_response = handle_slash_command(text)
+    if cmd_response is not None:
+        return jsonify({"response": cmd_response, "session_id": session_id})
+
+    user_message = build_user_message(payload)
+    graph        = get_graph()
+    config       = {"configurable": {"thread_id": session_id}}
+    result       = graph.invoke({"messages": [user_message]}, config=config)
+    return jsonify({"response": extract_last_response(result), "session_id": session_id})
+
+
+@app.post("/invocations")
+def invocations():
+    return _invoke_agent()
+
+
+@app.post("/api/invocations")
+def api_invocations():
+    return _invoke_agent()
 
 
 # ─── CLI interactive mode ──────────────────────────────────────────────────────
@@ -242,9 +208,9 @@ def run_cli():
     print("Nhập thông tin ticket CS (gõ 'exit' để thoát, 'new' để reset session)")
     print("-" * 60)
 
-    graph = get_graph()
+    graph      = get_graph()
     session_id = "cli-session-001"
-    config = {"configurable": {"thread_id": session_id}}
+    config     = {"configurable": {"thread_id": session_id}}
 
     while True:
         try:
@@ -261,22 +227,21 @@ def run_cli():
         if user_input.lower() == "new":
             import uuid
             session_id = f"cli-session-{uuid.uuid4().hex[:8]}"
-            config = {"configurable": {"thread_id": session_id}}
+            config     = {"configurable": {"thread_id": session_id}}
             print(f"[Đã bắt đầu session mới: {session_id}]")
             continue
 
-        message = HumanMessage(content=user_input)
-        result = graph.invoke({"messages": [message]}, config=config)
+        message  = HumanMessage(content=user_input)
+        result   = graph.invoke({"messages": [message]}, config=config)
         response = extract_last_response(result)
         print(f"\n[AI Assistant]\n{response}")
 
 
 if __name__ == "__main__":
     import sys
-    if "--cli" in sys.argv or len(sys.argv) == 1:
+    if "--cli" in sys.argv:
         run_cli()
     else:
-        if HAS_GREENNODE:
-            app.run(port=int(os.getenv("PORT", "8080")), host="0.0.0.0")
-        else:
-            run()
+        port = int(os.getenv("PORT", "8080"))
+        print(f"ZaloPay CS Agent  →  http://0.0.0.0:{port}")
+        app.run(host="0.0.0.0", port=port, debug=False)
