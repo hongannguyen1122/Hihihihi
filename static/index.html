@@ -240,6 +240,73 @@
   }
   .chip:hover { background: #d0f0e0; border-color: #00B14F; }
 
+  /* Attach button */
+  .btn-attach {
+    width: 36px; height: 36px;
+    background: none;
+    border: 1.5px solid #d0d8e8;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 16px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    transition: border-color 0.2s, background 0.2s;
+    margin-bottom: 3px;
+  }
+  .btn-attach:hover { border-color: #00B14F; background: #f0faf4; }
+  .btn-attach:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-attach.has-image { border-color: #00B14F; background: #e8f7ef; }
+
+  /* Image preview strip */
+  .image-preview-wrap {
+    padding: 8px 20px 0;
+    display: none;
+    align-items: center;
+    gap: 8px;
+  }
+  .image-preview-wrap.visible { display: flex; }
+  .image-preview-inner {
+    position: relative;
+    display: inline-block;
+  }
+  .image-preview-inner img {
+    max-height: 72px; max-width: 180px;
+    border-radius: 8px;
+    border: 1.5px solid #b3e6c8;
+    object-fit: cover;
+    display: block;
+  }
+  .btn-remove-img {
+    position: absolute;
+    top: -6px; right: -6px;
+    width: 18px; height: 18px;
+    background: #ff4d4f; color: #fff;
+    border: none; border-radius: 50%;
+    font-size: 11px; font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+  .image-preview-label {
+    font-size: 12px; color: #888;
+  }
+
+  /* Images in chat bubbles */
+  .bubble img.chat-img {
+    max-width: 100%; max-height: 260px;
+    border-radius: 8px;
+    margin-top: 6px;
+    display: block;
+    object-fit: contain;
+  }
+
+  /* Paste hint */
+  .paste-hint {
+    font-size: 11px; color: #aaa;
+    padding: 2px 20px 4px;
+    text-align: center;
+  }
+
   /* Scrollbar */
   .messages::-webkit-scrollbar { width: 5px; }
   .messages::-webkit-scrollbar-thumb { background: #c8e6d4; border-radius: 4px; }
@@ -275,9 +342,20 @@
   <!-- Quick prompts (shown only at start, populated dynamically) -->
   <div class="quick-prompts" id="quickPrompts"></div>
 
+  <!-- Image preview strip -->
+  <div class="image-preview-wrap" id="imagePreviewWrap">
+    <div class="image-preview-inner">
+      <img id="previewImg" src="" alt="preview">
+      <button class="btn-remove-img" onclick="clearImage()" title="Xóa ảnh">✕</button>
+    </div>
+    <span class="image-preview-label">Ảnh đính kèm</span>
+  </div>
+
   <!-- Input -->
+  <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
   <div class="input-area">
-    <textarea id="input" placeholder="Mô tả vấn đề khách hàng... (Shift+Enter xuống dòng)" rows="1"
+    <button class="btn-attach" id="attachBtn" onclick="document.getElementById('fileInput').click()" title="Đính kèm ảnh (hoặc Ctrl+V để dán)">📎</button>
+    <textarea id="input" placeholder="Mô tả vấn đề khách hàng... (Shift+Enter xuống dòng, Ctrl+V để dán ảnh)" rows="1"
       onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
     <button class="btn-send" id="sendBtn" onclick="sendMessage()" title="Gửi">
       <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
@@ -290,6 +368,7 @@ const ENDPOINT = "";
 
 let sessionId = "";
 let isLoading = false;
+let attachedImage = null; // data URL: "data:image/png;base64,..."
 
 // ── Chip defaults (fallback khi chưa có recent data) ─────────
 const DEFAULT_CHIPS = [
@@ -300,6 +379,46 @@ const DEFAULT_CHIPS = [
   { label: '💰 CASHBACK - chưa nhận tiền hoàn',
     text: 'Khách thanh toán hóa đơn điện 350.000đ bằng ví ZaloPay nhưng sau 24h vẫn chưa nhận được tiền hoàn.' },
 ];
+
+// ── Image attach / paste ──────────────────────────────────────
+function handleFileSelect(e) {
+  const file = e.target.files[0];
+  if (file) readImageFile(file);
+  e.target.value = '';
+}
+
+function readImageFile(file) {
+  if (!file.type.startsWith('image/')) return;
+  const reader = new FileReader();
+  reader.onload = (e) => setAttachedImage(e.target.result);
+  reader.readAsDataURL(file);
+}
+
+function setAttachedImage(dataUrl) {
+  attachedImage = dataUrl;
+  document.getElementById('previewImg').src = dataUrl;
+  document.getElementById('imagePreviewWrap').classList.add('visible');
+  document.getElementById('attachBtn').classList.add('has-image');
+}
+
+function clearImage() {
+  attachedImage = null;
+  document.getElementById('previewImg').src = '';
+  document.getElementById('imagePreviewWrap').classList.remove('visible');
+  document.getElementById('attachBtn').classList.remove('has-image');
+}
+
+document.addEventListener('paste', (e) => {
+  if (isLoading) return;
+  const items = e.clipboardData?.items || [];
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      readImageFile(item.getAsFile());
+      e.preventDefault();
+      break;
+    }
+  }
+});
 
 // ── Init ─────────────────────────────────────────────────────
 function generateId() {
@@ -360,10 +479,9 @@ function now() {
   return new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
 }
 
-function addMessage(role, text) {
+function addMessage(role, text, imageDataUrl) {
   const wrap = document.getElementById('messages');
 
-  // Hide quick prompts after first user message
   if (role === 'user') {
     document.getElementById('quickPrompts').style.display = 'none';
   }
@@ -383,7 +501,14 @@ function addMessage(role, text) {
   if (role === 'ai') {
     bubble.innerHTML = marked.parse(text || '');
   } else {
-    bubble.textContent = text;
+    if (text) bubble.textContent = text;
+    if (imageDataUrl) {
+      const img = document.createElement('img');
+      img.src = imageDataUrl;
+      img.className = 'chat-img';
+      img.alt = 'Ảnh đính kèm';
+      bubble.appendChild(img);
+    }
   }
 
   const ts = document.createElement('div');
@@ -421,19 +546,24 @@ async function sendMessage() {
   if (isLoading) return;
   const input = document.getElementById('input');
   const text = input.value.trim();
-  if (!text) return;
+  if (!text && !attachedImage) return;
 
+  const imageToSend = attachedImage;
   input.value = '';
   autoResize(input);
-  addMessage('user', text);
+  addMessage('user', text, imageToSend);
+  clearImage();
   setLoading(true);
   addTyping();
+
+  const body = { message: text || '(Xem ảnh đính kèm)', session_id: sessionId };
+  if (imageToSend) body.image = imageToSend;
 
   try {
     const res = await fetch(`${ENDPOINT}/api/invocations`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text, session_id: sessionId })
+      body: JSON.stringify(body)
     });
 
     const data = await res.json();
@@ -466,6 +596,7 @@ function setLoading(v) {
   isLoading = v;
   document.getElementById('sendBtn').disabled = v;
   document.getElementById('input').disabled = v;
+  document.getElementById('attachBtn').disabled = v;
 }
 
 // ── Helpers ───────────────────────────────────────────────────
