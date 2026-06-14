@@ -113,9 +113,11 @@ def _build_indexes(rows: list[dict]) -> dict:
         if mkt:
             idx_mkt[mkt] = i
 
-        promo = _normalize(p.get("promo_code", ""))
-        if promo:
-            idx_promo[promo] = i
+        promo_raw = p.get("promo_code", "")
+        for part in re.split(r"[\n\r]+", promo_raw):
+            code_norm = _normalize(part.strip())
+            if code_norm:
+                idx_promo[code_norm] = i
 
         text_blob = " ".join([
             p.get("name", ""),
