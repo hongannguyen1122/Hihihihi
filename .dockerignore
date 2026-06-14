@@ -1,0 +1,22 @@
+# Git & CI
+.git/
+.github/
+.gitignore
+
+# Secrets (CI inject qua build step trước khi build)
+.env
+.env.*
+.greennode.json
+.agentbase/
+
+# Runtime cache — container tự tạo lại
+data/recent_promotions.json
+data/cache_sheets.json
+
+# Python artifacts
+__pycache__/
+*.pyc
+venv/
+.venv/
+
+README.md

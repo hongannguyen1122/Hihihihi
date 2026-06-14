@@ -1,0 +1,22 @@
+# Secrets & credentials
+.env
+.env.*
+*.env
+.greennode.json
+.agentbase/
+google-credentials.json
+
+# Runtime-generated cache
+data/recent_promotions.json
+data/cache_sheets.json
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.venv/
+*.egg-info/
+dist/
+build/
+.DS_Store

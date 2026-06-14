@@ -1,0 +1,68 @@
+{
+  "faqs": [
+    {
+      "id": "FAQ_001",
+      "category": "Chương trình khuyến mãi - Tổng quát",
+      "question": "Khách hàng tham gia CTKM nhưng chưa nhận được ưu đãi?",
+      "answer": "1. Kiểm tra xem giao dịch của khách có đủ điều kiện không (thời gian, giá trị, đối tượng). 2. Kiểm tra quota: user có thể đã hết lượt nhận trong ngày/tháng. 3. Nếu đủ điều kiện nhưng chưa nhận: tạo Jira ticket cho Dev kiểm tra hệ thống. 4. Thông báo khách hàng thời gian xử lý thông thường là 24-48h.",
+      "resolution_path": "check_conditions → check_quota → create_jira_if_eligible",
+      "keywords": ["chưa nhận", "chưa nhận được", "ưu đãi", "khuyến mãi", "thưởng"]
+    },
+    {
+      "id": "FAQ_002",
+      "category": "Chương trình khuyến mãi - Điều kiện",
+      "question": "Làm thế nào để xác minh khách hàng đủ điều kiện tham gia CTKM?",
+      "answer": "Cần kiểm tra theo thứ tự: 1. Thời gian giao dịch có trong thời gian CTKM không. 2. Giá trị giao dịch có đủ mức tối thiểu không. 3. Khách hàng có thuộc đối tượng áp dụng không (eKYC, hạng thành viên...). 4. Giao dịch có thuộc loại được áp dụng không. 5. Quota có còn không (ngày/tháng). 6. Tài khoản có bị hạn chế không.",
+      "resolution_path": "systematic_check_all_conditions",
+      "keywords": ["điều kiện", "xác minh", "đủ điều kiện", "kiểm tra điều kiện"]
+    },
+    {
+      "id": "FAQ_003",
+      "category": "Jira - Quy trình tạo ticket",
+      "question": "Khi nào cần tạo Jira ticket cho Dev?",
+      "answer": "Tạo Jira khi: 1. Khách hàng đủ điều kiện nhưng chưa nhận được ưu đãi sau thời gian xử lý quy định. 2. Có mã lỗi hệ thống (error code từ CTKM). 3. Giao dịch thành công nhưng không ghi nhận trong hệ thống. 4. Quota hiển thị sai. KHÔNG tạo Jira khi: khách hàng không đủ điều kiện, hoặc chưa đủ thời gian xử lý.",
+      "resolution_path": "create_jira_ticket",
+      "keywords": ["jira", "dev", "lỗi hệ thống", "tạo ticket", "escalate"]
+    },
+    {
+      "id": "FAQ_004",
+      "category": "eKYC",
+      "question": "Khách hàng nói đã eKYC rồi nhưng hệ thống báo chưa?",
+      "answer": "1. Kiểm tra trạng thái eKYC trong hệ thống CRM. 2. Nếu eKYC đang pending: hướng dẫn khách chờ tối đa 24h. 3. Nếu eKYC thất bại: hướng dẫn thực hiện lại với ảnh rõ nét, đúng góc. 4. Nếu eKYC thành công nhưng hệ thống chưa cập nhật: tạo Jira cho Dev.",
+      "resolution_path": "check_ekyc_status → guide_retry_or_create_jira",
+      "keywords": ["ekyc", "xác thực", "định danh", "kyc", "cmnd", "cccd"]
+    },
+    {
+      "id": "FAQ_005",
+      "category": "Hoàn tiền",
+      "question": "Khách hàng chưa nhận được tiền hoàn?",
+      "answer": "1. Xác nhận thời gian hoàn tiền theo quy định CTKM (thường 24-48h). 2. Kiểm tra xem giao dịch gốc có thực sự đủ điều kiện không. 3. Nếu đã quá thời gian và đủ điều kiện: tạo Jira cho Dev kiểm tra hệ thống hoàn tiền. 4. Tiền hoàn sẽ vào số dư ví ZaloPay, không phải tài khoản ngân hàng.",
+      "resolution_path": "check_time → check_conditions → create_jira",
+      "keywords": ["hoàn tiền", "cashback", "tiền hoàn", "chưa nhận tiền hoàn"]
+    },
+    {
+      "id": "FAQ_006",
+      "category": "Voucher/Mã giảm giá",
+      "question": "Khách hàng nhận voucher nhưng không dùng được?",
+      "answer": "1. Kiểm tra hạn sử dụng voucher. 2. Kiểm tra điều kiện áp dụng (giá trị giao dịch tối thiểu, loại giao dịch). 3. Kiểm tra voucher đã được sử dụng chưa. 4. Kiểm tra tài khoản có bị hạn chế không. 5. Nếu voucher hợp lệ nhưng không áp dụng được: tạo Jira Dev.",
+      "resolution_path": "check_voucher_validity → check_conditions → create_jira_if_valid",
+      "keywords": ["voucher", "mã giảm giá", "không dùng được", "hết hạn", "không áp dụng"]
+    },
+    {
+      "id": "FAQ_007",
+      "category": "Quota",
+      "question": "Khách hàng nói chưa nhận ưu đãi lần nào nhưng báo hết quota?",
+      "answer": "1. Kiểm tra lịch sử nhận thưởng trong hệ thống (không chỉ dựa vào lời khách). 2. Quota tính theo ngày/tháng calendar, reset vào 00:00 ngày đầu tiên. 3. Nếu hệ thống ghi nhận sai quota: tạo Jira Dev ưu tiên. 4. Giải thích kỹ cho khách về cách tính quota.",
+      "resolution_path": "check_reward_history → explain_quota → create_jira_if_system_error",
+      "keywords": ["quota", "hết lượt", "đã đủ", "đã nhận", "giới hạn"]
+    },
+    {
+      "id": "FAQ_008",
+      "category": "Văn phong phản hồi",
+      "question": "Cách viết phản hồi cho khách hàng theo chuẩn ZaloPay?",
+      "answer": "Nguyên tắc: 1. Luôn xưng 'ZaloPay' và gọi khách là 'bạn'. 2. Thân thiện, chuyên nghiệp, ngắn gọn. 3. Cảm ơn sự tin tưởng khi kết thúc. 4. Đưa ra giải pháp cụ thể, không mơ hồ. 5. Không hứa hẹn những điều không chắc chắn. Mẫu: 'ZaloPay đã [hành động]. [Thông tin/kết quả]. Nếu cần thêm hỗ trợ, ZaloPay luôn sẵn sàng đồng hành cùng bạn.'",
+      "resolution_path": "generate_response_with_template",
+      "keywords": ["phản hồi", "văn phong", "reply", "trả lời khách", "nội dung phản hồi"]
+    }
+  ]
+}

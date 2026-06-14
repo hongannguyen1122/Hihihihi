@@ -1,0 +1,254 @@
+{
+  "promotions": [
+    {
+      "id": "ZLPMUASAM_2026_Q2",
+      "codename": "ZLPMUASAM",
+      "name": "Ưu đãi thanh toán ZaloPay - Go! & Big C",
+      "description": "Giảm tiền khi mua sắm qua Zalo OA 'Đại siêu thị Go! & Big C' hoặc GO! App và thanh toán bằng ZaloPay với mã ZLPMUASAM",
+      "start_date": "2026-04-01",
+      "end_date": "2026-06-30",
+      "status": "active",
+      "type": "discount_voucher",
+      "conditions": [
+        "Mua sắm qua Zalo OA 'Đại siêu thị Go! & Big C' hoặc GO! App",
+        "Thanh toán bằng ZaloPay",
+        "Nhập mã ZLPMUASAM tại bước thanh toán",
+        "Giá trị đơn hàng tối thiểu 700.000đ (để nhận giảm 15.000đ) hoặc 1.200.000đ (để nhận giảm 25.000đ)",
+        "Xác nhận giao dịch thành công",
+        "Chưa dùng quá 2 lần trong tháng (tính theo tài khoản ZaloPay / thẻ / tài khoản ngân hàng / thiết bị)"
+      ],
+      "exclusions": [
+        "Không áp dụng cho sản phẩm dược phẩm",
+        "Không kết hợp với các chương trình khuyến mãi khác trên ZaloPay",
+        "Không áp dụng cho nhân viên VNG và các công ty liên kết"
+      ],
+      "reward": "Giảm 15.000đ cho đơn từ 700.000đ | Giảm 25.000đ cho đơn từ 1.200.000đ",
+      "promo_code": "ZLPMUASAM",
+      "quota_per_user": "2 lần/tháng/tài khoản (hoặc thẻ/TK ngân hàng/thiết bị)",
+      "quota_total": 0,
+      "processing_time": "Giảm giá áp dụng ngay tại thời điểm thanh toán",
+      "error_codes": {
+        "ZLP001": "Mã ZLPMUASAM không hợp lệ hoặc đã hết hạn",
+        "ZLP002": "Đã sử dụng đủ 2 lần trong tháng",
+        "ZLP003": "Giá trị đơn hàng chưa đạt mức tối thiểu",
+        "ZLP004": "Sản phẩm thuộc danh mục không áp dụng (dược phẩm)",
+        "ZLP005": "Lỗi hệ thống áp dụng mã - cần tạo Jira Dev kiểm tra"
+      },
+      "resolution_guides": {
+        "not_eligible": "Giải thích điều kiện đơn hàng, kênh mua sắm, và quota tháng cho khách hàng",
+        "eligible_not_received": "Tạo Jira ticket cho Dev kiểm tra hệ thống áp mã khuyến mãi",
+        "quota_exceeded": "Thông báo khách hàng đã dùng đủ 2 lần trong tháng, mời tham gia tháng sau",
+        "system_error": "Tạo Jira ticket ưu tiên cao cho Dev kiểm tra hệ thống"
+      },
+      "confluence_page": "ZALOPAY_PROMO/ZLPMUASAM_2026_Q2_SETUP",
+      "keywords": ["zlpmuasam", "go!", "big c", "đại siêu thị", "mua sắm", "ưu đãi thanh toán", "giảm 15000", "giảm 25000", "go app", "zalo oa"]
+    },
+    {
+      "id": "GAMEVERSE_2025_06",
+      "codename": "GAMEVERSE",
+      "name": "ZaloPay GAMEVERSE - Vũ Trụ Trò Chơi",
+      "description": "Chương trình tặng mã dự thưởng cho khách hàng thanh toán game qua ZaloPay",
+      "start_date": "2025-06-01",
+      "end_date": "2025-06-30",
+      "status": "active",
+      "type": "game_reward",
+      "conditions": [
+        "Giao dịch thanh toán game thành công qua ZaloPay",
+        "Giá trị giao dịch tối thiểu 50.000 VNĐ",
+        "User đã xác thực eKYC",
+        "Tài khoản không bị khóa/hạn chế",
+        "Chưa nhận mã trong ngày (quota: 1 mã/user/ngày)",
+        "Ứng dụng ZaloPay phiên bản 6.0 trở lên"
+      ],
+      "exclusions": [
+        "Giao dịch từ ví doanh nghiệp",
+        "Thanh toán qua liên kết ngân hàng bị lỗi sau đó hoàn tiền",
+        "User đã sử dụng chương trình khuyến mãi trùng lặp cùng ngày"
+      ],
+      "reward": "Mã dự thưởng quà ZaloPay",
+      "quota_per_user": "1 mã/ngày",
+      "quota_total": 50000,
+      "processing_time": "Ngay sau giao dịch thành công (tối đa 15 phút)",
+      "error_codes": {
+        "GV001": "User chưa đủ điều kiện eKYC",
+        "GV002": "Đã đạt quota ngày",
+        "GV003": "Giá trị giao dịch chưa đủ",
+        "GV004": "Sản phẩm không thuộc danh mục game được áp dụng",
+        "GV005": "Lỗi hệ thống - cần tạo Jira Dev kiểm tra"
+      },
+      "resolution_guides": {
+        "not_eligible": "Giải thích điều kiện tham gia cho khách hàng",
+        "eligible_not_received": "Tạo Jira ticket cho Dev kiểm tra hệ thống phát mã",
+        "quota_exceeded": "Thông báo khách hàng đã đạt giới hạn nhận mã trong ngày",
+        "system_error": "Tạo Jira ticket ưu tiên cao cho Dev kiểm tra"
+      },
+      "confluence_page": "ZALOPAY_PROMO/GAMEVERSE_2025_Q2_SETUP",
+      "keywords": ["gameverse", "game", "mã dự thưởng", "vũ trụ trò chơi", "game reward"]
+    },
+    {
+      "id": "CASHBACK_Q2_2025",
+      "codename": "CASHBACK_Q2",
+      "name": "Hoàn tiền 10% khi thanh toán hóa đơn Q2/2025",
+      "description": "Chương trình hoàn tiền 10% tối đa 50.000 VNĐ khi thanh toán hóa đơn điện nước, internet",
+      "start_date": "2025-04-01",
+      "end_date": "2025-06-30",
+      "status": "active",
+      "type": "cashback",
+      "conditions": [
+        "Thanh toán hóa đơn điện, nước, internet, truyền hình qua ZaloPay",
+        "Giá trị hóa đơn tối thiểu 100.000 VNĐ",
+        "Áp dụng tối đa 2 lần/tháng/user",
+        "User có tài khoản ZaloPay đang hoạt động",
+        "Thanh toán bằng số dư ví ZaloPay hoặc ZaloPay+ (không áp dụng liên kết thẻ)"
+      ],
+      "exclusions": [
+        "Thanh toán hóa đơn doanh nghiệp",
+        "Hóa đơn đã được hoàn tiền từ chương trình khác trong tháng",
+        "Tài khoản mới tạo trong vòng 7 ngày"
+      ],
+      "reward": "Hoàn tiền 10% tối đa 50.000 VNĐ/lần",
+      "quota_per_user": "2 lần/tháng",
+      "quota_total": 100000,
+      "processing_time": "Hoàn tiền trong vòng 24h sau giao dịch",
+      "error_codes": {
+        "CB001": "Thanh toán bằng phương thức không được áp dụng",
+        "CB002": "Đã đạt quota tháng",
+        "CB003": "Giá trị hóa đơn chưa đủ điều kiện",
+        "CB004": "Loại hóa đơn không thuộc danh mục áp dụng",
+        "CB005": "Lỗi hệ thống hoàn tiền - cần tạo Jira"
+      },
+      "resolution_guides": {
+        "not_eligible": "Giải thích điều kiện thanh toán và phương thức áp dụng",
+        "eligible_not_received": "Kiểm tra 24h, nếu vẫn chưa nhận tạo Jira Dev",
+        "quota_exceeded": "Thông báo đã đạt giới hạn 2 lần/tháng",
+        "system_error": "Tạo Jira ticket cho Dev kiểm tra hệ thống hoàn tiền"
+      },
+      "confluence_page": "ZALOPAY_PROMO/CASHBACK_Q2_2025_SETUP",
+      "keywords": ["cashback", "hoàn tiền", "hóa đơn", "điện nước", "internet", "truyền hình"]
+    },
+    {
+      "id": "BIRTHDAY_VIP_2025",
+      "codename": "BIRTHDAY_VIP",
+      "name": "Quà sinh nhật VIP ZaloPay 2025",
+      "description": "Tặng voucher 100.000 VNĐ cho khách hàng VIP nhân dịp sinh nhật",
+      "start_date": "2025-01-01",
+      "end_date": "2025-12-31",
+      "status": "active",
+      "type": "birthday_gift",
+      "conditions": [
+        "Khách hàng có hạng VIP (Silver, Gold, Platinum)",
+        "Trong tháng sinh nhật theo CCCD/CMND đã đăng ký",
+        "Tài khoản eKYC thành công",
+        "Tài khoản hoạt động (có giao dịch trong 90 ngày gần nhất)",
+        "Chưa nhận voucher sinh nhật trong năm"
+      ],
+      "exclusions": [
+        "Tài khoản bị tạm khóa",
+        "Thông tin sinh nhật trên CCCD khác với thông tin khai báo",
+        "Tài khoản doanh nghiệp"
+      ],
+      "reward": "Voucher ZaloPay 100.000 VNĐ (áp dụng cho mọi giao dịch từ 200.000 VNĐ)",
+      "quota_per_user": "1 lần/năm",
+      "quota_total": 0,
+      "processing_time": "Voucher gửi vào ngày đầu tiên của tháng sinh nhật",
+      "error_codes": {
+        "BV001": "User không đủ hạng VIP",
+        "BV002": "Không trong tháng sinh nhật",
+        "BV003": "Tài khoản không hoạt động",
+        "BV004": "Đã nhận voucher sinh nhật năm nay",
+        "BV005": "Lỗi hệ thống phát voucher"
+      },
+      "resolution_guides": {
+        "not_eligible": "Giải thích điều kiện hạng VIP và thời gian nhận quà",
+        "eligible_not_received": "Kiểm tra ngày đầu tháng sinh nhật, nếu đã qua ngày tạo Jira Dev",
+        "wrong_birthday": "Hướng dẫn khách hàng cập nhật thông tin eKYC",
+        "system_error": "Tạo Jira ticket cho Dev kiểm tra hệ thống phát voucher sinh nhật"
+      },
+      "confluence_page": "ZALOPAY_PROMO/BIRTHDAY_VIP_2025_SETUP",
+      "keywords": ["birthday", "sinh nhật", "vip", "voucher", "quà sinh nhật", "silver", "gold", "platinum"]
+    },
+    {
+      "id": "NEWUSER_WELCOME_2025",
+      "codename": "NEWUSER_WELCOME",
+      "name": "Chào mừng thành viên mới ZaloPay 2025",
+      "description": "Tặng 50.000 VNĐ vào ví cho khách hàng mới đăng ký và hoàn thành eKYC",
+      "start_date": "2025-01-01",
+      "end_date": "2025-12-31",
+      "status": "active",
+      "type": "new_user_bonus",
+      "conditions": [
+        "Tài khoản mới tạo trong vòng 30 ngày",
+        "Hoàn thành xác thực eKYC thành công",
+        "Thực hiện giao dịch đầu tiên thành công (bất kỳ loại)",
+        "Số điện thoại chưa từng đăng ký ZaloPay trước đây",
+        "CCCD/CMND chưa từng được dùng đăng ký tài khoản ZaloPay"
+      ],
+      "exclusions": [
+        "Số điện thoại đã từng đăng ký ZaloPay và xóa tài khoản",
+        "CCCD đã được liên kết với tài khoản khác",
+        "Giao dịch đầu tiên bị hoàn tiền hoặc thất bại"
+      ],
+      "reward": "50.000 VNĐ vào số dư ví ZaloPay",
+      "quota_per_user": "1 lần/tài khoản",
+      "quota_total": 0,
+      "processing_time": "Trong vòng 24h sau giao dịch đầu tiên thành công",
+      "error_codes": {
+        "NU001": "Số điện thoại đã từng đăng ký trước đây",
+        "NU002": "CCCD đã được dùng cho tài khoản khác",
+        "NU003": "Chưa hoàn thành eKYC",
+        "NU004": "Tài khoản đã quá 30 ngày kể từ đăng ký",
+        "NU005": "Lỗi hệ thống phát thưởng"
+      },
+      "resolution_guides": {
+        "not_eligible": "Giải thích điều kiện user mới, kiểm tra lịch sử tài khoản",
+        "eligible_not_received": "Kiểm tra 24h sau giao dịch, nếu chưa nhận tạo Jira Dev",
+        "duplicate_account": "Thông báo số điện thoại/CCCD đã được sử dụng trước đây",
+        "system_error": "Tạo Jira ticket cho Dev kiểm tra hệ thống phát thưởng user mới"
+      },
+      "confluence_page": "ZALOPAY_PROMO/NEWUSER_WELCOME_2025_SETUP",
+      "keywords": ["newuser", "người dùng mới", "chào mừng", "đăng ký mới", "welcome", "50k", "ekyk", "kyc"]
+    },
+    {
+      "id": "TRANSFER_LUCKY_2025_06",
+      "codename": "TRANSFER_LUCKY",
+      "name": "Chuyển tiền may mắn tháng 6/2025",
+      "description": "Cơ hội nhận thưởng tiền mặt khi chuyển tiền qua ZaloPay trong tháng 6",
+      "start_date": "2025-06-01",
+      "end_date": "2025-06-30",
+      "status": "active",
+      "type": "lucky_draw",
+      "conditions": [
+        "Chuyển tiền thành công qua ZaloPay (P2P)",
+        "Giá trị mỗi lần chuyển tối thiểu 200.000 VNĐ",
+        "Mỗi giao dịch hợp lệ = 1 lượt quay",
+        "Tối đa 5 lượt quay/ngày",
+        "User đã xác thực eKYC",
+        "Tài khoản hoạt động ít nhất 30 ngày"
+      ],
+      "exclusions": [
+        "Chuyển tiền cho chính mình (cùng chủ sở hữu CCCD)",
+        "Giao dịch bị hoàn tiền",
+        "Chuyển tiền qua API doanh nghiệp"
+      ],
+      "reward": "Tiền mặt ngẫu nhiên từ 10.000 - 1.000.000 VNĐ",
+      "quota_per_user": "5 lượt/ngày",
+      "quota_total": 0,
+      "processing_time": "Kết quả ngay sau khi quay thưởng",
+      "error_codes": {
+        "TL001": "Giao dịch không đủ giá trị tối thiểu",
+        "TL002": "Đã đạt tối đa lượt quay trong ngày",
+        "TL003": "Chuyển tiền cho chính mình",
+        "TL004": "User chưa đủ 30 ngày hoạt động",
+        "TL005": "Lỗi hệ thống phát thưởng"
+      },
+      "resolution_guides": {
+        "not_eligible": "Giải thích điều kiện chuyển tiền hợp lệ",
+        "eligible_not_received": "Kiểm tra kết quả quay thưởng, nếu lỗi tạo Jira Dev",
+        "quota_exceeded": "Thông báo đã đạt 5 lượt quay trong ngày",
+        "system_error": "Tạo Jira ticket cho Dev kiểm tra hệ thống quay thưởng"
+      },
+      "confluence_page": "ZALOPAY_PROMO/TRANSFER_LUCKY_2025_06_SETUP",
+      "keywords": ["transfer lucky", "chuyển tiền may mắn", "quay thưởng", "lucky draw", "chuyển tiền"]
+    }
+  ]
+}

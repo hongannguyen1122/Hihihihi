@@ -1,0 +1,136 @@
+name: Deploy to GreenNode AgentBase
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+env:
+  REGISTRY:     vcr.vngcloud.vn
+  REPO_NAME:    111480-abp111974
+  IMAGE_NAME:   zalopay-cs-agent
+  RUNTIME_ID:   runtime-accc401c-bc26-451a-9b5e-bb4e445e95eb
+  FLAVOR_ID:    runtime-s2-general-2x4
+  LLM_BASE_URL: https://maas-llm-aiplatform-hcm.api.vngcloud.vn/v1
+  LLM_MODEL:    qwen/qwen3-5-27b
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ────────────────────────────────────────────
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # ── 2. Inject google-credentials.json từ secret ────────────
+      - name: Write Google credentials
+        run: echo '${{ secrets.GOOGLE_CREDENTIALS_JSON }}' > google-credentials.json
+
+      # ── 3. Docker Buildx ───────────────────────────────────────
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # ── 4. IAM token ───────────────────────────────────────────
+      - name: Get GreenNode IAM token
+        id: iam
+        run: |
+          TOKEN=$(curl -sf -X POST \
+            "https://iam.api.vngcloud.vn/accounts-api/v2/auth/token" \
+            -u "${{ secrets.GN_CLIENT_ID }}:${{ secrets.GN_CLIENT_SECRET }}" \
+            -d "grant_type=client_credentials" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            | jq -r '.access_token')
+          echo "::add-mask::$TOKEN"
+          echo "token=$TOKEN" >> "$GITHUB_OUTPUT"
+
+      # ── 5. CR credentials + Docker login ──────────────────────
+      - name: Login to Container Registry
+        id: cr
+        run: |
+          CREDS=$(curl -sf \
+            "https://agentbase.api.vngcloud.vn/cr/api/v1/registry-credential" \
+            -H "Authorization: Bearer ${{ steps.iam.outputs.token }}")
+          CR_USER=$(echo "$CREDS" | jq -r '.username')
+          CR_PASS=$(echo "$CREDS" | jq -r '.secret')
+          echo "::add-mask::$CR_PASS"
+          echo "username=$CR_USER" >> "$GITHUB_OUTPUT"
+          echo "password=$CR_PASS" >> "$GITHUB_OUTPUT"
+          echo "$CR_PASS" | docker login "${{ env.REGISTRY }}" -u "$CR_USER" --password-stdin
+
+      # ── 6. Build & push (SHA tag + latest) ────────────────────
+      - name: Build and push image
+        run: |
+          SHA_TAG="${{ env.REGISTRY }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          LATEST_TAG="${{ env.REGISTRY }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:latest"
+          docker buildx build \
+            --platform linux/amd64 \
+            --push \
+            --tag "$SHA_TAG" \
+            --tag "$LATEST_TAG" \
+            .
+
+      # ── 7. Update runtime ──────────────────────────────────────
+      - name: Update AgentBase runtime
+        run: |
+          IMAGE="${{ env.REGISTRY }}/${{ env.REPO_NAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          PAYLOAD=$(jq -n \
+            --arg imageUrl    "$IMAGE" \
+            --arg crUser      "${{ steps.cr.outputs.username }}" \
+            --arg crPass      "${{ steps.cr.outputs.password }}" \
+            --arg flavorId    "${{ env.FLAVOR_ID }}" \
+            --arg llmApiKey   "${{ secrets.LLM_API_KEY }}" \
+            --arg llmBaseUrl  "${{ env.LLM_BASE_URL }}" \
+            --arg llmModel    "${{ env.LLM_MODEL }}" \
+            '{
+              description: "",
+              imageUrl: $imageUrl,
+              imageAuth: { enabled: true, username: $crUser, password: $crPass },
+              command: [],
+              args: [],
+              environmentVariables: {
+                LLM_API_KEY:   $llmApiKey,
+                LLM_BASE_URL:  $llmBaseUrl,
+                LLM_MODEL:     $llmModel,
+                PORT:          "8080"
+              },
+              flavorId: $flavorId,
+              autoscaling: {
+                minReplicas: 1, maxReplicas: 1,
+                cpuUtilization: 50, memoryUtilization: 50
+              },
+              networkConfig: { mode: "PUBLIC" }
+            }')
+
+          RESULT=$(curl -sf -X PATCH \
+            "https://agentbase.api.vngcloud.vn/runtime/agent-runtimes/${{ env.RUNTIME_ID }}" \
+            -H "Authorization: Bearer ${{ steps.iam.outputs.token }}" \
+            -H "Content-Type: application/json" \
+            -d "$PAYLOAD")
+
+          echo "Runtime update: $(echo "$RESULT" | jq -r '"name=\(.name) status=\(.status)"')"
+
+      # ── 8. Đợi ACTIVE ──────────────────────────────────────────
+      - name: Wait for ACTIVE status
+        timeout-minutes: 5
+        run: |
+          for i in $(seq 1 30); do
+            STATUS=$(curl -sf \
+              "https://agentbase.api.vngcloud.vn/runtime/agent-runtimes/${{ env.RUNTIME_ID }}" \
+              -H "Authorization: Bearer ${{ steps.iam.outputs.token }}" \
+              | jq -r '.status')
+            echo "[$i] $STATUS"
+            [ "$STATUS" = "ACTIVE"  ] && echo "ACTIVE ✓" && exit 0
+            [ "$STATUS" = "ERROR"   ] && echo "::error::Runtime ERROR" && exit 1
+            sleep 10
+          done
+          echo "::error::Timeout" && exit 1
+
+      # ── 9. Health check ────────────────────────────────────────
+      - name: Health check endpoint
+        run: |
+          URL="https://endpoint-d26b3256-b85a-4f03-b3c5-4115e7dc86d2.agentbase-runtime.aiplatform.vngcloud.vn"
+          CODE=$(curl -sf -o /dev/null -w "%{http_code}" "$URL/health" || echo "000")
+          echo "Health: $CODE"
+          [ "$CODE" = "200" ] && echo "OK ✓  → $URL" || echo "::warning::Health returned $CODE"
