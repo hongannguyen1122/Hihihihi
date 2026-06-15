@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ZaloPay Promo Assistant</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; overflow: hidden; }
+    @keyframes bounce-dot {
+      0%, 80%, 100% { transform: translateY(0); }
+      40%           { transform: translateY(-6px); }
+    }
+    .dot-1 { animation: bounce-dot 1.2s infinite 0ms; }
+    .dot-2 { animation: bounce-dot 1.2s infinite 150ms; }
+    .dot-3 { animation: bounce-dot 1.2s infinite 300ms; }
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+  </style>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+// ── Static data ────────────────────────────────────────────────────────────────
+
+const HISTORY = [
+  { id: 1, title: 'Khuyến mãi Shopee',    group: 'Hôm nay' },
+  { id: 2, title: 'Thanh toán hóa đơn',   group: 'Hôm qua' },
+  { id: 3, title: 'Nạp điện thoại',       group: '13/06'   },
+  { id: 4, title: 'Mã giảm giá Grab',     group: '12/06'   },
+];
+
+const PROMOS = [
+  {
+    id: 1,
+    label: 'Giảm 50% đơn hàng Shopee',
+    time: '14:30',
+    style: { background: 'linear-gradient(to right, #F97316, #EAB308)' },
+  },
+  {
+    id: 2,
+    label: 'Hoàn tiền 20% nạp điện thoại',
+    time: '10:15',
+    style: { background: '#14B8A6' },
+  },
+  {
+    id: 3,
+    label: 'Giảm 25K chuyến xe Grab',
+    time: '09:45',
+    style: { background: '#8B5CF6' },
+  },
+];
+
+const INIT_MESSAGES = [
+  {
+    id: 0,
+    role: 'ai',
+    text: 'Xin chào! Mình là trợ lý AI của ZaloPay. Bạn cần tìm chương trình khuyến mãi nào? 😊',
+  },
+];
+
+const MOCK_REPLIES = [
+  'Mình đang tìm kiếm khuyến mãi phù hợp cho bạn... 🔍',
+  'Bạn có thể cho mình biết thêm thông tin về giao dịch không? 📋',
+  'Mình đã kiểm tra hệ thống. Vui lòng xác nhận điều kiện nhé! ✅',
+];
+
+// ── Sub-components ─────────────────────────────────────────────────────────────
+
+function TypingIndicator() {
+  return (
+    <div className="flex items-end gap-2">
+      <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center
+                      text-white font-bold text-xs flex-shrink-0 shadow-sm">
+        N
+      </div>
+      <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-sm shadow-sm flex gap-1.5 items-center">
+        <span className="w-2 h-2 bg-gray-400 rounded-full dot-1 inline-block" />
+        <span className="w-2 h-2 bg-gray-400 rounded-full dot-2 inline-block" />
+        <span className="w-2 h-2 bg-gray-400 rounded-full dot-3 inline-block" />
+      </div>
+    </div>
+  );
+}
+
+function MessageBubble({ msg }) {
+  const isUser = msg.role === 'user';
+  return (
+    <div className={`flex items-end gap-2 ${isUser ? 'justify-end' : 'justify-start'}`}>
+      {!isUser && (
+        <div className="w-8 h-8 rounded-full bg-blue-500 flex items-center justify-center
+                        text-white font-bold text-xs flex-shrink-0 shadow-sm">
+          N
+        </div>
+      )}
+      <div
+        className={`max-w-md px-4 py-3 rounded-2xl shadow-sm text-sm leading-relaxed
+          ${isUser
+            ? 'bg-blue-500 text-white rounded-br-sm'
+            : 'bg-white text-gray-700 rounded-bl-sm'
+          }`}
+      >
+        {msg.text}
+      </div>
+      {isUser && (
+        <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center
+                        text-gray-500 text-sm flex-shrink-0">
+          👤
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Icons ──────────────────────────────────────────────────────────────────────
+
+function IconImage() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+        d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14
+           m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+    </svg>
+  );
+}
+
+function IconPaperclip() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+        d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656
+           l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+    </svg>
+  );
+}
+
+function IconSend() {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" className="w-4 h-4" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+        d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+    </svg>
+  );
+}
+
+// ── Main component ─────────────────────────────────────────────────────────────
+
+function ZaloPayChat() {
+  const [selectedId, setSelectedId]   = useState(1);
+  const [messages,   setMessages]     = useState(INIT_MESSAGES);
+  const [input,      setInput]        = useState('');
+  const [isTyping,   setIsTyping]     = useState(false);
+  const [replyIdx,   setReplyIdx]     = useState(0);
+  const messagesEndRef = useRef(null);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, isTyping]);
+
+  const sendMessage = () => {
+    const text = input.trim();
+    if (!text || isTyping) return;
+
+    const userMsg = { id: Date.now(), role: 'user', text };
+    setMessages(prev => [...prev, userMsg]);
+    setInput('');
+    setIsTyping(true);
+
+    setTimeout(() => {
+      const reply = MOCK_REPLIES[replyIdx % MOCK_REPLIES.length];
+      setReplyIdx(i => i + 1);
+      setIsTyping(false);
+      setMessages(prev => [...prev, { id: Date.now() + 1, role: 'ai', text: reply }]);
+    }, 1000);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  };
+
+  // Group history items
+  const grouped = HISTORY.reduce((acc, item) => {
+    (acc[item.group] = acc[item.group] || []).push(item);
+    return acc;
+  }, {});
+
+  return (
+    <div className="flex h-screen w-screen overflow-hidden">
+
+      {/* ── LEFT SIDEBAR ──────────────────────────────────────────── */}
+      <aside className="w-48 bg-white border-r border-gray-200 flex flex-col flex-shrink-0">
+
+        {/* Sidebar header */}
+        <div className="flex items-center justify-between px-3 py-3 border-b border-gray-100">
+          <span className="font-semibold text-sm text-gray-700">Lịch sử</span>
+          <button
+            className="w-6 h-6 flex items-center justify-center rounded-full
+                       hover:bg-gray-100 text-gray-400 hover:text-gray-600
+                       text-xl leading-none transition-colors"
+            title="Cuộc hội thoại mới"
+          >
+            +
+          </button>
+        </div>
+
+        {/* History list */}
+        <div className="flex-1 overflow-y-auto py-2">
+          {Object.entries(grouped).map(([group, items]) => (
+            <div key={group}>
+              <p className="px-3 pt-2 pb-0.5 text-xs text-gray-400 font-medium select-none">
+                {group}
+              </p>
+              {items.map(item => (
+                <button
+                  key={item.id}
+                  onClick={() => setSelectedId(item.id)}
+                  className={`w-full text-left px-3 py-2 mx-1 rounded-lg mb-0.5 transition-colors
+                    text-[13px] leading-snug
+                    ${selectedId === item.id
+                      ? 'bg-blue-100 text-blue-700 font-medium'
+                      : 'text-gray-600 hover:bg-gray-50'
+                    }`}
+                  style={{ width: 'calc(100% - 8px)' }}
+                >
+                  {item.title}
+                </button>
+              ))}
+            </div>
+          ))}
+        </div>
+
+        {/* CTKM MỚI section */}
+        <div className="border-t border-gray-100 px-3 py-3">
+          <p className="text-[10px] font-semibold text-gray-400 tracking-widest mb-2 select-none">
+            CTKM MỚI
+          </p>
+          <div className="flex flex-col gap-2">
+            {PROMOS.map(promo => (
+              <button
+                key={promo.id}
+                onClick={() => setInput(promo.label)}
+                style={promo.style}
+                className="w-full text-left px-3 py-2 rounded-full text-white
+                           text-[11px] font-medium flex items-center justify-between
+                           gap-1 hover:opacity-90 transition-opacity shadow-sm"
+              >
+                <span className="truncate">{promo.label}</span>
+                <span className="opacity-75 flex-shrink-0 tabular-nums">{promo.time}</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </aside>
+
+      {/* ── MAIN CHAT ─────────────────────────────────────────────── */}
+      <main className="flex-1 flex flex-col overflow-hidden" style={{ background: '#EEF2FF' }}>
+
+        {/* Top navbar */}
+        <header className="bg-white border-b border-gray-200 px-5 py-3
+                           flex items-center justify-between flex-shrink-0">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-blue-500 flex items-center justify-center
+                            text-white font-bold text-sm shadow-sm flex-shrink-0">
+              N
+            </div>
+            <div>
+              <p className="font-semibold text-sm text-gray-800 leading-tight">
+                Niubi Promo Assistant
+              </p>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="w-2 h-2 rounded-full flex-shrink-0"
+                      style={{ background: '#22C55E' }} />
+                <span className="text-xs text-gray-500">Đang hoạt động</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <div className="px-3 py-1 text-white text-xs font-bold rounded-full select-none"
+                 style={{ background: '#0068FF' }}>
+              Zalo Pay
+            </div>
+            <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center
+                            text-gray-500 text-sm cursor-pointer hover:bg-gray-300 transition-colors">
+              👤
+            </div>
+          </div>
+        </header>
+
+        {/* Messages area */}
+        <div className="flex-1 overflow-y-auto relative">
+
+          {/* Z watermark */}
+          <div className="absolute inset-0 flex items-center justify-center
+                          pointer-events-none select-none overflow-hidden">
+            <span className="font-black leading-none"
+                  style={{ fontSize: '420px', color: '#C7D2FE', opacity: 0.15 }}>
+              Z
+            </span>
+          </div>
+
+          {/* Messages */}
+          <div className="relative z-10 px-6 py-5 flex flex-col gap-4">
+            {messages.map(msg => (
+              <MessageBubble key={msg.id} msg={msg} />
+            ))}
+
+            {isTyping && <TypingIndicator />}
+
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+
+        {/* Input bar */}
+        <div className="px-5 py-4 flex-shrink-0">
+          <div className="bg-white rounded-full flex items-center px-4 py-2.5 shadow-sm
+                          border border-gray-100">
+            <input
+              type="text"
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={handleKeyDown}
+              placeholder="Nhập tin nhắn..."
+              className="flex-1 outline-none text-sm text-gray-700
+                         placeholder-gray-400 bg-transparent min-w-0"
+            />
+            <div className="flex items-center gap-1 ml-3 flex-shrink-0">
+              <button className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors rounded-full
+                                 hover:bg-gray-100" title="Đính kèm ảnh">
+                <IconImage />
+              </button>
+              <button className="p-1.5 text-gray-400 hover:text-gray-600 transition-colors rounded-full
+                                 hover:bg-gray-100" title="Đính kèm file">
+                <IconPaperclip />
+              </button>
+              <button
+                onClick={sendMessage}
+                disabled={!input.trim() || isTyping}
+                className="w-8 h-8 rounded-full flex items-center justify-center text-white
+                           transition-opacity ml-1 disabled:opacity-40"
+                style={{ background: '#0EA5E9' }}
+                title="Gửi"
+              >
+                <IconSend />
+              </button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+    </div>
+  );
+}
+
+// ── Mount ──────────────────────────────────────────────────────────────────────
+ReactDOM.createRoot(document.getElementById('root')).render(<ZaloPayChat />);
+</script>
+</body>
+</html>
