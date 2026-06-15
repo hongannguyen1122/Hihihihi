@@ -829,7 +829,7 @@ async function sendMessage() {
   if (imageToSend) body.image = imageToSend;
 
   try {
-    const res  = await fetch(`${ENDPOINT}/api/invocations`, {
+    const res  = await fetch(`${ENDPOINT}/invocations`, {
       method:  "POST",
       headers: { "Content-Type": "application/json" },
       body:    JSON.stringify(body)
