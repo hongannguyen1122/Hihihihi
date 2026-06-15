@@ -195,6 +195,16 @@
   .pill-teal   { background: #14b8a6; }
   .pill-purple { background: #8b5cf6; }
 
+  .pill-skeleton {
+    height: 30px;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    margin-bottom: 5px;
+  }
+  @keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
   /* ── Main chat ────────────────────────────────────────────────── */
   .main {
     flex: 1;
@@ -559,23 +569,9 @@
     </button>
   </div>
 
-  <div class="sb-ctkm">
-    <div class="sb-ctkm-label">CTKM mới</div>
-    <button class="pill pill-orange"
-      onclick="fillInput('Khách không nhận được ưu đãi từ CTKM Giảm 50% đơn hàng Shopee. ')">
-      <span class="pill-label">Giảm 50% đơn hàng Shopee</span>
-      <span class="pill-time">14:30</span>
-    </button>
-    <button class="pill pill-teal"
-      onclick="fillInput('Khách thanh toán nạp điện thoại nhưng chưa nhận được hoàn tiền 20%. ')">
-      <span class="pill-label">Hoàn tiền 20% nạp điện thoại</span>
-      <span class="pill-time">10:15</span>
-    </button>
-    <button class="pill pill-purple"
-      onclick="fillInput('Khách đặt xe Grab qua Zalopay nhưng không được giảm 25K. ')">
-      <span class="pill-label">Giảm 25K chuyến xe Grab</span>
-      <span class="pill-time">09:45</span>
-    </button>
+  <div class="sb-ctkm" id="ctkmSection" style="display:none">
+    <div class="sb-ctkm-label">CTKM mới nhất</div>
+    <div id="ctkmPills"></div>
   </div>
 </aside>
 
@@ -917,6 +913,64 @@ async function loadRecentChips() {
   });
 }
 
+// ── CTKM mới nhất từ Sheet ────────────────────────────────────
+const PILL_STYLES = ["pill-orange", "pill-teal", "pill-purple"];
+
+function fmtDate(iso) {
+  if (!iso) return "";
+  const parts = iso.split("-");
+  return parts.length === 3 ? `${parts[2]}/${parts[1]}` : iso;
+}
+
+function fmtPeriod(start, end) {
+  if (start && end) return `${fmtDate(start)} – ${fmtDate(end)}`;
+  if (start)        return `từ ${fmtDate(start)}`;
+  return "";
+}
+
+async function loadNewPromos() {
+  const section   = document.getElementById("ctkmSection");
+  const container = document.getElementById("ctkmPills");
+
+  // Hiện skeleton loading
+  section.style.display = "block";
+  container.innerHTML = PILL_STYLES.map(() =>
+    `<div class="pill-skeleton"></div>`).join("");
+
+  try {
+    const res = await fetch("/api/new-promos");
+    if (!res.ok) throw new Error("fetch failed");
+    const promos = await res.json();
+
+    if (!promos.length) { section.style.display = "none"; return; }
+
+    container.innerHTML = "";
+    promos.forEach((p, i) => {
+      // Nhãn: mkt_code + tên ngắn gọn
+      const code   = (p.mkt_code || "").trim();
+      const name   = (p.name || "").trim();
+      const label  = code
+        ? (name ? `${code} – ${name}` : code)
+        : (name || "CTKM");
+      const period = fmtPeriod(p.start_date, p.end_date);
+
+      // Nội dung auto-fill khi click
+      const fillText = `Khách gặp vấn đề với CTKM ${code}${name ? " (" + name + ")" : ""}. `;
+
+      const btn = document.createElement("button");
+      btn.className = `pill ${PILL_STYLES[i % PILL_STYLES.length]}`;
+      btn.title     = `${label}${period ? " | " + period : ""}`;
+      btn.onclick   = () => fillInput(fillText);
+      btn.innerHTML =
+        `<span class="pill-label">${escHtml(label)}</span>` +
+        `<span class="pill-time">${escHtml(period)}</span>`;
+      container.appendChild(btn);
+    });
+  } catch (_) {
+    section.style.display = "none";
+  }
+}
+
 async function initSession() {
   sessionId   = generateId();
   startTime   = Date.now();
@@ -930,7 +984,7 @@ async function initSession() {
   currentMsgs.push({ role:"ai", text: welcomeText, hasImage:false, time: nowTime() });
 
   document.getElementById("quickPrompts").style.display = "flex";
-  await loadRecentChips();
+  await Promise.all([loadRecentChips(), loadNewPromos()]);
   renderSidebarSessions();
 }
 

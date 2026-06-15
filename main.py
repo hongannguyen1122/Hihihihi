@@ -173,6 +173,35 @@ def api_recent():
         return app.response_class("[]", mimetype="application/json")
 
 
+@app.get("/api/new-promos")
+def api_new_promos():
+    """Trả về 3 CTKM được thêm vào sheet gần nhất (STT cao nhất = mới nhất)."""
+    if not _HAS_SHEETS:
+        return jsonify([])
+    try:
+        rows = _sr.fetch_sheet_rows()
+
+        def _stt_key(r):
+            try:
+                return int(r.get("stt") or 0)
+            except (ValueError, TypeError):
+                return 0
+
+        top3 = sorted(rows, key=_stt_key, reverse=True)[:3]
+        return jsonify([
+            {
+                "mkt_code":   r.get("mkt_code", ""),
+                "name":       r.get("name", ""),
+                "start_date": r.get("start_date", ""),
+                "end_date":   r.get("end_date", ""),
+                "type":       r.get("type", ""),
+            }
+            for r in top3
+        ])
+    except Exception:
+        return jsonify([])
+
+
 def _invoke_agent():
     payload    = request.get_json(force=True) or {}
     session_id = (
