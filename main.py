@@ -41,10 +41,13 @@ class AgentState(TypedDict):
 
 # ─── LLM + Graph ──────────────────────────────────────────────────────────────
 
+_GN_MAAS_BASE_URL = "https://maas-llm-aiplatform-hcm.api.vngcloud.vn/v1"
+_GN_MAAS_MODEL    = "qwen/qwen3-5-27b"
+
 def build_llm() -> ChatOpenAI:
     return ChatOpenAI(
-        model=os.getenv("LLM_MODEL", "gpt-4o"),
-        base_url=os.getenv("LLM_BASE_URL") or None,
+        model=os.getenv("LLM_MODEL", _GN_MAAS_MODEL),
+        base_url=os.getenv("LLM_BASE_URL", _GN_MAAS_BASE_URL),
         api_key=os.getenv("LLM_API_KEY", ""),
         temperature=0.1,
         max_tokens=4096,
