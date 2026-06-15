@@ -10,22 +10,137 @@
 
   body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    background: #f0f2f5;
+    background: #0f1c2e;
     height: 100vh;
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    flex-direction: row;
+    overflow: hidden;
   }
 
-  .container {
+  /* ── Sidebar ──────────────────────────────────────────────── */
+  .sidebar {
+    width: 260px;
+    min-width: 260px;
+    background: #0f1c2e;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
+    border-right: 1px solid #0a1520;
+    flex-shrink: 0;
+  }
+
+  .sidebar-header {
+    padding: 16px 14px 12px;
+    border-bottom: 1px solid #162840;
+    flex-shrink: 0;
+  }
+
+  .sidebar-logo {
+    font-size: 13px;
+    font-weight: 700;
+    color: #00B14F;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin-bottom: 10px;
+    letter-spacing: 0.02em;
+  }
+
+  .btn-new-chat {
     width: 100%;
-    max-width: 820px;
+    background: #00B14F;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 9px 12px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+    transition: background 0.2s;
+  }
+  .btn-new-chat:hover { background: #009140; }
+  .btn-new-chat:active { background: #007a32; }
+
+  .sidebar-section-label {
+    font-size: 10px;
+    color: #2a4060;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    padding: 12px 14px 4px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .sidebar-sessions {
+    flex: 1;
+    overflow-y: auto;
+    padding: 4px 0 8px;
+  }
+
+  .sidebar-date-group {
+    padding: 10px 14px 3px;
+    font-size: 10px;
+    color: #2a4060;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .session-item {
+    padding: 9px 12px;
+    cursor: pointer;
+    border-radius: 7px;
+    margin: 1px 6px;
+    transition: background 0.15s;
+    position: relative;
+  }
+  .session-item:hover  { background: #1a2e45; }
+  .session-item.active { background: #1a3a55; border-left: 2px solid #00B14F; padding-left: 10px; }
+
+  .session-item-title {
+    font-size: 12.5px;
+    color: #8aa0bc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+    line-height: 1.4;
+  }
+  .session-item.active .session-item-title { color: #4ade80; }
+  .session-item:hover .session-item-title  { color: #bccfdf; }
+
+  .session-item-meta {
+    font-size: 10.5px;
+    color: #2e4a65;
+    margin-top: 2px;
+  }
+  .session-item.active .session-item-meta { color: #3a6a4a; }
+
+  .sidebar-empty {
+    padding: 28px 16px;
+    font-size: 12px;
+    color: #2a4060;
+    text-align: center;
+    line-height: 1.7;
+  }
+
+  .sidebar-sessions::-webkit-scrollbar { width: 3px; }
+  .sidebar-sessions::-webkit-scrollbar-thumb { background: #1a3050; border-radius: 4px; }
+
+  /* ── Main chat area ───────────────────────────────────────── */
+  .container {
+    flex: 1;
+    min-width: 0;
     height: 100vh;
     display: flex;
     flex-direction: column;
     background: #fff;
-    box-shadow: 0 0 40px rgba(0,0,0,0.12);
+    box-shadow: -4px 0 20px rgba(0,0,0,0.25);
   }
 
   /* Header */
@@ -46,19 +161,7 @@
     font-size: 20px;
   }
   .header-info h1 { font-size: 16px; font-weight: 600; }
-  .header-info p { font-size: 12px; opacity: 0.85; margin-top: 2px; }
-  .header-actions { margin-left: auto; display: flex; gap: 8px; }
-  .btn-new {
-    background: rgba(255,255,255,0.2);
-    border: 1px solid rgba(255,255,255,0.4);
-    color: #fff;
-    padding: 6px 14px;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 13px;
-    transition: background 0.2s;
-  }
-  .btn-new:hover { background: rgba(255,255,255,0.35); }
+  .header-info p  { font-size: 12px; opacity: 0.85; margin-top: 2px; }
 
   /* Session badge */
   .session-bar {
@@ -88,10 +191,9 @@
   .msg { display: flex; gap: 10px; max-width: 100%; align-items: flex-end; }
   .msg.user { flex-direction: row-reverse; }
 
-  /* Content wrapper — constrains bubble width and aligns timestamp */
   .msg > div { max-width: 78%; display: flex; flex-direction: column; }
   .msg.user > div { align-items: flex-end; }
-  .msg.ai  > div  { align-items: flex-start; }
+  .msg.ai   > div { align-items: flex-start; }
 
   .avatar {
     width: 34px; height: 34px;
@@ -116,7 +218,7 @@
   .msg.ai   .bubble { background: #f0faf4; border-top-left-radius: 4px; color: #1a1a2e; }
   .msg.user .bubble { background: #00B14F; border-top-right-radius: 4px; color: #fff; }
 
-  /* Markdown inside bubble */
+  /* Markdown */
   .bubble h3 { font-size: 14px; margin: 8px 0 4px; }
   .bubble p  { margin: 4px 0; }
   .bubble ul, .bubble ol { padding-left: 18px; margin: 4px 0; }
@@ -145,17 +247,10 @@
   .msg.user .bubble code { background: rgba(255,255,255,0.2); }
   .msg.user .bubble pre  { background: rgba(255,255,255,0.15); }
 
-  .timestamp {
-    font-size: 11px;
-    color: #aaa;
-    margin-top: 4px;
-  }
+  .timestamp { font-size: 11px; color: #aaa; margin-top: 4px; }
 
   /* Typing indicator */
-  .typing .bubble {
-    padding: 12px 16px;
-    display: flex; align-items: center; gap: 5px;
-  }
+  .typing .bubble { padding: 12px 16px; display: flex; align-items: center; gap: 5px; }
   .dot {
     width: 7px; height: 7px;
     background: #00B14F;
@@ -166,7 +261,7 @@
   .dot:nth-child(3) { animation-delay: 0.4s; }
   @keyframes bounce {
     0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
-    30% { transform: translateY(-6px); opacity: 1; }
+    30%            { transform: translateY(-6px); opacity: 1; }
   }
 
   /* Input area */
@@ -206,12 +301,11 @@
     flex-shrink: 0;
     transition: background 0.2s, transform 0.1s;
   }
-  .btn-send:hover  { background: #009140; }
-  .btn-send:active { transform: scale(0.93); }
+  .btn-send:hover   { background: #009140; }
+  .btn-send:active  { transform: scale(0.93); }
   .btn-send:disabled { background: #99d4b8; cursor: not-allowed; }
   .btn-send svg { width: 18px; height: 18px; fill: #fff; }
 
-  /* Error message */
   .error-bubble {
     background: #fff0f0 !important;
     border: 1px solid #ffd0d0;
@@ -269,10 +363,7 @@
     gap: 8px;
   }
   .image-preview-wrap.visible { display: flex; }
-  .image-preview-inner {
-    position: relative;
-    display: inline-block;
-  }
+  .image-preview-inner { position: relative; display: inline-block; }
   .image-preview-inner img {
     max-height: 72px; max-width: 180px;
     border-radius: 8px;
@@ -291,9 +382,7 @@
     display: flex; align-items: center; justify-content: center;
     line-height: 1;
   }
-  .image-preview-label {
-    font-size: 12px; color: #888;
-  }
+  .image-preview-label { font-size: 12px; color: #888; }
 
   /* Images in chat bubbles */
   .bubble img.chat-img {
@@ -304,49 +393,60 @@
     object-fit: contain;
   }
 
-  /* Paste hint */
-  .paste-hint {
-    font-size: 11px; color: #aaa;
-    padding: 2px 20px 4px;
-    text-align: center;
+  /* Restored session banner */
+  .restored-banner {
+    align-self: center;
+    background: #f0faf4;
+    border: 1px solid #b3e6c8;
+    border-radius: 8px;
+    color: #00874a;
+    font-size: 11px;
+    padding: 5px 14px;
+    margin-bottom: 4px;
   }
 
-  /* Scrollbar */
+  /* Scrollbars */
   .messages::-webkit-scrollbar { width: 5px; }
   .messages::-webkit-scrollbar-thumb { background: #c8e6d4; border-radius: 4px; }
 </style>
 </head>
 <body>
+
+<!-- ── Sidebar ────────────────────────────────────────────────── -->
+<div class="sidebar">
+  <div class="sidebar-header">
+    <div class="sidebar-logo">💬 ZaloPay CS</div>
+    <button class="btn-new-chat" onclick="newSession()">✏️ Cuộc hội thoại mới</button>
+  </div>
+  <div class="sidebar-section-label">Lịch sử hội thoại</div>
+  <div class="sidebar-sessions" id="sidebarSessions">
+    <div class="sidebar-empty">Chưa có hội thoại nào.<br>Bắt đầu chat để lưu lịch sử.</div>
+  </div>
+</div>
+
+<!-- ── Main chat ──────────────────────────────────────────────── -->
 <div class="container">
 
-  <!-- Header -->
   <div class="header">
     <div class="header-icon">💬</div>
     <div class="header-info">
       <h1>Zalopay CS Promotion Assistant</h1>
       <p>AI hỗ trợ xử lý ticket chương trình khuyến mãi</p>
     </div>
-    <div class="header-actions">
-      <button class="btn-new" onclick="newSession()">🔄 Cuộc hội thoại mới</button>
-    </div>
   </div>
 
-  <!-- Session bar -->
   <div class="session-bar">
     🔑 Session: <span class="session-id" id="sessionId"></span>
-    <span id="statusDot" style="margin-left:auto; display:flex; align-items:center; gap:4px;">
+    <span style="margin-left:auto; display:flex; align-items:center; gap:4px;">
       <span style="width:7px;height:7px;background:#22c55e;border-radius:50%;display:inline-block"></span>
       <span style="font-size:12px;color:#555">Agent đang hoạt động</span>
     </span>
   </div>
 
-  <!-- Messages -->
   <div class="messages" id="messages"></div>
 
-  <!-- Quick prompts (shown only at start, populated dynamically) -->
   <div class="quick-prompts" id="quickPrompts"></div>
 
-  <!-- Image preview strip -->
   <div class="image-preview-wrap" id="imagePreviewWrap">
     <div class="image-preview-inner">
       <img id="previewImg" src="" alt="preview">
@@ -355,12 +455,16 @@
     <span class="image-preview-label">Ảnh đính kèm</span>
   </div>
 
-  <!-- Input -->
   <input type="file" id="fileInput" accept="image/*" style="display:none" onchange="handleFileSelect(event)">
   <div class="input-area">
-    <button class="btn-attach" id="attachBtn" onclick="document.getElementById('fileInput').click()" title="Đính kèm ảnh (hoặc Ctrl+V để dán)">📎</button>
-    <textarea id="input" placeholder="Mô tả vấn đề khách hàng... (Shift+Enter xuống dòng, Ctrl+V để dán ảnh)" rows="1"
-      onkeydown="handleKey(event)" oninput="autoResize(this)"></textarea>
+    <button class="btn-attach" id="attachBtn"
+      onclick="document.getElementById('fileInput').click()"
+      title="Đính kèm ảnh (hoặc Ctrl+V để dán)">📎</button>
+    <textarea id="input"
+      placeholder="Mô tả vấn đề khách hàng... (Shift+Enter xuống dòng, Ctrl+V để dán ảnh)"
+      rows="1"
+      onkeydown="handleKey(event)"
+      oninput="autoResize(this)"></textarea>
     <button class="btn-send" id="sendBtn" onclick="sendMessage()" title="Gửi">
       <svg viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
     </button>
@@ -368,55 +472,190 @@
 </div>
 
 <script>
-const ENDPOINT = "";
+const ENDPOINT     = "";
+const SESSIONS_KEY = "zp_sessions";
+const MAX_SESSIONS = 50;
 
-let sessionId = "";
-let isLoading = false;
-let attachedImage = null; // data URL: "data:image/png;base64,..."
+let sessionId     = "";
+let startTime     = 0;
+let isLoading     = false;
+let attachedImage = null;
+let currentMsgs   = []; // {role, text, hasImage, time}[]
 
-// ── Chip defaults (fallback khi chưa có recent data) ─────────
+// ── Default chips ─────────────────────────────────────────────
 const DEFAULT_CHIPS = [
-  { label: '🛒 ZLPMUASAM - không được giảm giá',
-    text: 'Khách mua Go! App đơn 850.000đ, nhập mã ZLPMUASAM nhưng không được giảm giá. Giao dịch ngày hôm nay.' },
-  { label: '🎮 GAMEVERSE - chưa nhận mã dự thưởng',
-    text: 'Khách thanh toán game qua ZaloPay 60.000đ nhưng chưa nhận được mã dự thưởng GAMEVERSE.' },
-  { label: '💰 CASHBACK - chưa nhận tiền hoàn',
-    text: 'Khách thanh toán hóa đơn điện 350.000đ bằng ví ZaloPay nhưng sau 24h vẫn chưa nhận được tiền hoàn.' },
+  { label: "🛒 ZLPMUASAM - không được giảm giá",
+    text:  "Khách mua Go! App đơn 850.000đ, nhập mã ZLPMUASAM nhưng không được giảm giá. Giao dịch ngày hôm nay." },
+  { label: "🎮 GAMEVERSE - chưa nhận mã dự thưởng",
+    text:  "Khách thanh toán game qua ZaloPay 60.000đ nhưng chưa nhận được mã dự thưởng GAMEVERSE." },
+  { label: "💰 CASHBACK - chưa nhận tiền hoàn",
+    text:  "Khách thanh toán hóa đơn điện 350.000đ bằng ví ZaloPay nhưng sau 24h vẫn chưa nhận được tiền hoàn." },
 ];
+
+// ── localStorage helpers ──────────────────────────────────────
+function getSessions() {
+  try { return JSON.parse(localStorage.getItem(SESSIONS_KEY) || "[]"); }
+  catch { return []; }
+}
+
+function saveSessions(sessions) {
+  try {
+    localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions));
+  } catch {
+    // Quota exceeded: keep latest 20 sessions
+    try {
+      localStorage.setItem(SESSIONS_KEY, JSON.stringify(sessions.slice(0, 20)));
+    } catch {}
+  }
+}
+
+function persistCurrentSession() {
+  // Don't save until user has sent at least one message
+  const firstUser = currentMsgs.find(m => m.role === "user");
+  if (!firstUser) return;
+
+  const title   = firstUser.text.trim().slice(0, 60) || "(Hội thoại mới)";
+  const sessions = getSessions();
+  const idx      = sessions.findIndex(s => s.id === sessionId);
+
+  const entry = {
+    id:       sessionId,
+    title,
+    startTime,
+    msgCount: currentMsgs.length,
+    messages: currentMsgs,
+  };
+
+  if (idx >= 0) sessions[idx] = entry;
+  else {
+    sessions.unshift(entry);
+    if (sessions.length > MAX_SESSIONS) sessions.pop();
+  }
+
+  saveSessions(sessions);
+  renderSidebarSessions();
+}
+
+// ── Sidebar render ────────────────────────────────────────────
+function escHtml(s) {
+  return String(s)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+function sameDay(a, b) {
+  return a.getFullYear() === b.getFullYear()
+      && a.getMonth()    === b.getMonth()
+      && a.getDate()     === b.getDate();
+}
+
+function dateGroupLabel(ts) {
+  const d   = new Date(ts);
+  const tod = new Date();
+  const yes = new Date(tod); yes.setDate(tod.getDate() - 1);
+  if (sameDay(d, tod)) return "Hôm nay";
+  if (sameDay(d, yes)) return "Hôm qua";
+  return d.toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
+}
+
+function shortTime(ts) {
+  return new Date(ts).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+}
+
+function renderSidebarSessions() {
+  const container = document.getElementById("sidebarSessions");
+  const sessions  = getSessions();
+
+  if (sessions.length === 0) {
+    container.innerHTML = '<div class="sidebar-empty">Chưa có hội thoại nào.<br>Bắt đầu chat để lưu lịch sử.</div>';
+    return;
+  }
+
+  container.innerHTML = "";
+  let lastGroup = null;
+
+  sessions.forEach(s => {
+    const grp = dateGroupLabel(s.startTime);
+    if (grp !== lastGroup) {
+      const lbl = document.createElement("div");
+      lbl.className = "sidebar-date-group";
+      lbl.textContent = grp;
+      container.appendChild(lbl);
+      lastGroup = grp;
+    }
+
+    const item = document.createElement("div");
+    item.className = "session-item" + (s.id === sessionId ? " active" : "");
+    item.onclick = () => loadSession(s.id);
+    item.innerHTML =
+      `<div class="session-item-title">${escHtml(s.title)}</div>` +
+      `<div class="session-item-meta">${shortTime(s.startTime)} · ${s.msgCount} tin nhắn</div>`;
+    container.appendChild(item);
+  });
+}
+
+// ── Load session from history ─────────────────────────────────
+function loadSession(id) {
+  if (isLoading) return;
+  const sessions = getSessions();
+  const s = sessions.find(x => x.id === id);
+  if (!s) return;
+
+  sessionId   = s.id;
+  startTime   = s.startTime;
+  currentMsgs = s.messages || [];
+
+  document.getElementById("sessionId").textContent = sessionId;
+  const wrap = document.getElementById("messages");
+  wrap.innerHTML = "";
+
+  const banner = document.createElement("div");
+  banner.className = "restored-banner";
+  banner.textContent = `📂 Lịch sử — ${new Date(s.startTime).toLocaleDateString("vi-VN", { weekday: "short", day: "2-digit", month: "2-digit", year: "numeric" })}`;
+  wrap.appendChild(banner);
+
+  currentMsgs.forEach(m => _renderMsgEl(m.role, m.text, null, m.time, m.hasImage));
+
+  document.getElementById("quickPrompts").style.display = "none";
+  clearImage();
+  renderSidebarSessions();
+  wrap.scrollTop = wrap.scrollHeight;
+  document.getElementById("input").focus();
+}
 
 // ── Image attach / paste ──────────────────────────────────────
 function handleFileSelect(e) {
   const file = e.target.files[0];
   if (file) readImageFile(file);
-  e.target.value = '';
+  e.target.value = "";
 }
 
 function readImageFile(file) {
-  if (!file.type.startsWith('image/')) return;
+  if (!file.type.startsWith("image/")) return;
   const reader = new FileReader();
-  reader.onload = (e) => setAttachedImage(e.target.result);
+  reader.onload = e => setAttachedImage(e.target.result);
   reader.readAsDataURL(file);
 }
 
 function setAttachedImage(dataUrl) {
   attachedImage = dataUrl;
-  document.getElementById('previewImg').src = dataUrl;
-  document.getElementById('imagePreviewWrap').classList.add('visible');
-  document.getElementById('attachBtn').classList.add('has-image');
+  document.getElementById("previewImg").src = dataUrl;
+  document.getElementById("imagePreviewWrap").classList.add("visible");
+  document.getElementById("attachBtn").classList.add("has-image");
 }
 
 function clearImage() {
   attachedImage = null;
-  document.getElementById('previewImg').src = '';
-  document.getElementById('imagePreviewWrap').classList.remove('visible');
-  document.getElementById('attachBtn').classList.remove('has-image');
+  document.getElementById("previewImg").src = "";
+  document.getElementById("imagePreviewWrap").classList.remove("visible");
+  document.getElementById("attachBtn").classList.remove("has-image");
 }
 
-document.addEventListener('paste', (e) => {
+document.addEventListener("paste", e => {
   if (isLoading) return;
-  const items = e.clipboardData?.items || [];
-  for (const item of items) {
-    if (item.type.startsWith('image/')) {
+  for (const item of e.clipboardData?.items || []) {
+    if (item.type.startsWith("image/")) {
       readImageFile(item.getAsFile());
       e.preventDefault();
       break;
@@ -424,100 +663,107 @@ document.addEventListener('paste', (e) => {
   }
 });
 
-// ── Init ─────────────────────────────────────────────────────
+// ── Session init ──────────────────────────────────────────────
 function generateId() {
-  return 'cs-' + Math.random().toString(36).slice(2, 10);
+  return "cs-" + Math.random().toString(36).slice(2, 10);
 }
 
 async function loadRecentChips() {
-  const container = document.getElementById('quickPrompts');
-  container.innerHTML = '';
-
+  const container = document.getElementById("quickPrompts");
+  container.innerHTML = "";
   let recents = [];
   try {
-    const res = await fetch('/api/recent');
+    const res = await fetch("/api/recent");
     if (res.ok) recents = await res.json();
   } catch (_) {}
 
   const chips = recents.length > 0
     ? recents.map(r => ({
-        label: `🕐 ${r.mkt_code}${r.name ? ' — ' + r.name : ''}`,
-        text: `Khách gặp vấn đề với CTKM ${r.mkt_code}${r.name ? ' (' + r.name + ')' : ''}. `,
-        meta: r.period ? r.period : ''
+        label: `🕐 ${r.mkt_code}${r.name ? " — " + r.name : ""}`,
+        text:  `Khách gặp vấn đề với CTKM ${r.mkt_code}${r.name ? " (" + r.name + ")" : ""}. `,
+        meta:  r.period || ""
       }))
     : DEFAULT_CHIPS;
 
+  if (recents.length > 0) {
+    const lbl = document.createElement("span");
+    lbl.style.cssText = "font-size:11px;color:#888;align-self:center;white-space:nowrap;margin-right:4px;";
+    lbl.textContent = "🕐 Tra cứu gần đây:";
+    container.appendChild(lbl);
+  }
+
   chips.forEach(chip => {
-    const el = document.createElement('span');
-    el.className = 'chip';
+    const el = document.createElement("span");
+    el.className = "chip";
     el.title = chip.meta || chip.text;
     el.textContent = chip.label;
     el.onclick = () => {
-      document.getElementById('input').value = chip.text;
-      autoResize(document.getElementById('input'));
-      document.getElementById('input').focus();
+      document.getElementById("input").value = chip.text;
+      autoResize(document.getElementById("input"));
+      document.getElementById("input").focus();
     };
     container.appendChild(el);
   });
-
-  // Label nhỏ phía trước nếu có recent data
-  if (recents.length > 0) {
-    const label = document.createElement('span');
-    label.style.cssText = 'font-size:11px;color:#888;align-self:center;white-space:nowrap;margin-right:4px;';
-    label.textContent = '🕐 Tra cứu gần đây:';
-    container.insertBefore(label, container.firstChild);
-  }
 }
 
 async function initSession() {
-  sessionId = generateId();
-  document.getElementById('sessionId').textContent = sessionId;
-  document.getElementById('messages').innerHTML = '';
-  addMessage('ai', `Xin chào! 👋 Tôi là **AI Promotion Assistant** của Zalopay.\n\nHãy mô tả vấn đề khách hàng đang gặp phải (tên CTKM, ngày giao dịch, triệu chứng) để tôi hỗ trợ bạn xử lý ticket.`);
-  document.getElementById('quickPrompts').style.display = 'flex';
+  sessionId   = generateId();
+  startTime   = Date.now();
+  currentMsgs = [];
+
+  document.getElementById("sessionId").textContent = sessionId;
+  document.getElementById("messages").innerHTML = "";
+  // Welcome message (not persisted until user sends)
+  _renderMsgEl("ai",
+    marked.parse(`Xin chào! 👋 Tôi là **AI Promotion Assistant** của Zalopay.\n\nHãy mô tả vấn đề khách hàng đang gặp phải (tên CTKM, ngày giao dịch, triệu chứng) để tôi hỗ trợ bạn xử lý ticket.`),
+    null, nowTime(), false, /*rawHtml=*/true);
+  currentMsgs.push({ role: "ai", text: "Xin chào! 👋 Tôi là **AI Promotion Assistant** của Zalopay.\n\nHãy mô tả vấn đề khách hàng đang gặp phải (tên CTKM, ngày giao dịch, triệu chứng) để tôi hỗ trợ bạn xử lý ticket.", hasImage: false, time: nowTime() });
+
+  document.getElementById("quickPrompts").style.display = "flex";
   await loadRecentChips();
+  renderSidebarSessions();
 }
 
 // ── Message rendering ─────────────────────────────────────────
-function now() {
-  return new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' });
+function nowTime() {
+  return new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
 }
 
-function addMessage(role, text, imageDataUrl) {
-  const wrap = document.getElementById('messages');
-
-  if (role === 'user') {
-    document.getElementById('quickPrompts').style.display = 'none';
-  }
-
-  const msg = document.createElement('div');
+// Render DOM element only — no tracking, no persist
+function _renderMsgEl(role, text, imageDataUrl, timestamp, hasImagePlaceholder, rawHtml) {
+  const wrap = document.getElementById("messages");
+  const msg  = document.createElement("div");
   msg.className = `msg ${role}`;
 
-  const avatar = document.createElement('div');
-  avatar.className = 'avatar';
-  avatar.textContent = role === 'ai' ? '🤖' : '👤';
+  const avatar = document.createElement("div");
+  avatar.className = "avatar";
+  avatar.textContent = role === "ai" ? "🤖" : "👤";
 
-  const content = document.createElement('div');
+  const content = document.createElement("div");
+  const bubble  = document.createElement("div");
+  bubble.className = "bubble";
 
-  const bubble = document.createElement('div');
-  bubble.className = 'bubble';
-
-  if (role === 'ai') {
-    bubble.innerHTML = marked.parse(text || '');
+  if (role === "ai") {
+    bubble.innerHTML = rawHtml ? text : marked.parse(text || "");
   } else {
     if (text) bubble.textContent = text;
     if (imageDataUrl) {
-      const img = document.createElement('img');
+      const img = document.createElement("img");
       img.src = imageDataUrl;
-      img.className = 'chat-img';
-      img.alt = 'Ảnh đính kèm';
+      img.className = "chat-img";
+      img.alt = "Ảnh đính kèm";
       bubble.appendChild(img);
+    } else if (hasImagePlaceholder) {
+      const note = document.createElement("div");
+      note.style.cssText = "font-size:12px;opacity:0.75;margin-top:4px;";
+      note.textContent = "🖼️ [Ảnh đính kèm — không lưu trong lịch sử]";
+      bubble.appendChild(note);
     }
   }
 
-  const ts = document.createElement('div');
-  ts.className = 'timestamp';
-  ts.textContent = now();
+  const ts = document.createElement("div");
+  ts.className = "timestamp";
+  ts.textContent = timestamp || "";
 
   content.appendChild(bubble);
   content.appendChild(ts);
@@ -528,68 +774,78 @@ function addMessage(role, text, imageDataUrl) {
   return msg;
 }
 
+// Public: render + track + persist
+function addMessage(role, text, imageDataUrl) {
+  const t = nowTime();
+  if (role === "user") document.getElementById("quickPrompts").style.display = "none";
+  _renderMsgEl(role, text, imageDataUrl, t, false, false);
+  currentMsgs.push({ role, text: text || "", hasImage: !!imageDataUrl, time: t });
+  persistCurrentSession();
+}
+
 function addTyping() {
-  const wrap = document.getElementById('messages');
-  const msg = document.createElement('div');
-  msg.className = 'msg ai typing';
-  msg.id = 'typing-indicator';
+  const wrap = document.getElementById("messages");
+  const msg  = document.createElement("div");
+  msg.className = "msg ai typing";
+  msg.id = "typing-indicator";
   msg.innerHTML = `
     <div class="avatar">🤖</div>
-    <div><div class="bubble"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+    <div><div class="bubble">
+      <div class="dot"></div><div class="dot"></div><div class="dot"></div>
+    </div></div>`;
   wrap.appendChild(msg);
   wrap.scrollTop = wrap.scrollHeight;
 }
 
 function removeTyping() {
-  const el = document.getElementById('typing-indicator');
+  const el = document.getElementById("typing-indicator");
   if (el) el.remove();
 }
 
 // ── Send ──────────────────────────────────────────────────────
 async function sendMessage() {
   if (isLoading) return;
-  const input = document.getElementById('input');
-  const text = input.value.trim();
+  const input = document.getElementById("input");
+  const text  = input.value.trim();
   if (!text && !attachedImage) return;
 
   const imageToSend = attachedImage;
-  input.value = '';
+  input.value = "";
   autoResize(input);
-  addMessage('user', text, imageToSend);
+  addMessage("user", text, imageToSend);
   clearImage();
   setLoading(true);
   addTyping();
 
-  const body = { message: text || '(Xem ảnh đính kèm)', session_id: sessionId };
+  const body = { message: text || "(Xem ảnh đính kèm)", session_id: sessionId };
   if (imageToSend) body.image = imageToSend;
 
   try {
-    const res = await fetch(`${ENDPOINT}/api/invocations`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(body)
+    const res  = await fetch(`${ENDPOINT}/api/invocations`, {
+      method:  "POST",
+      headers: { "Content-Type": "application/json" },
+      body:    JSON.stringify(body)
     });
-
     const data = await res.json();
     removeTyping();
 
     if (data.response) {
-      addMessage('ai', data.response);
+      addMessage("ai", data.response);
     } else if (data.error) {
-      const errMsg = document.createElement('div');
-      errMsg.className = 'msg ai';
-      errMsg.innerHTML = `<div class="avatar">🤖</div><div><div class="bubble error-bubble">⚠️ Lỗi: ${data.error}</div></div>`;
-      document.getElementById('messages').appendChild(errMsg);
+      const el = document.createElement("div");
+      el.className = "msg ai";
+      el.innerHTML = `<div class="avatar">🤖</div><div><div class="bubble error-bubble">⚠️ Lỗi: ${escHtml(data.error)}</div></div>`;
+      document.getElementById("messages").appendChild(el);
     } else {
-      addMessage('ai', JSON.stringify(data, null, 2));
+      addMessage("ai", JSON.stringify(data, null, 2));
     }
   } catch (err) {
     removeTyping();
-    const wrap = document.getElementById('messages');
-    const errEl = document.createElement('div');
-    errEl.className = 'msg ai';
-    errEl.innerHTML = `<div class="avatar">🤖</div><div><div class="bubble error-bubble">⚠️ Không kết nối được đến agent. Kiểm tra network và CORS.<br><small>${err.message}</small></div></div>`;
-    wrap.appendChild(errEl);
+    const wrap = document.getElementById("messages");
+    const el   = document.createElement("div");
+    el.className = "msg ai";
+    el.innerHTML = `<div class="avatar">🤖</div><div><div class="bubble error-bubble">⚠️ Không kết nối được đến agent.<br><small>${escHtml(err.message)}</small></div></div>`;
+    wrap.appendChild(el);
     wrap.scrollTop = wrap.scrollHeight;
   } finally {
     setLoading(false);
@@ -598,33 +854,33 @@ async function sendMessage() {
 
 function setLoading(v) {
   isLoading = v;
-  document.getElementById('sendBtn').disabled = v;
-  document.getElementById('input').disabled = v;
-  document.getElementById('attachBtn').disabled = v;
+  document.getElementById("sendBtn").disabled   = v;
+  document.getElementById("input").disabled     = v;
+  document.getElementById("attachBtn").disabled = v;
 }
 
 // ── Helpers ───────────────────────────────────────────────────
 function newSession() {
   if (isLoading) return;
-  initSession();
-  document.getElementById('input').focus();
+  clearImage();
+  initSession().then(() => document.getElementById("input").focus());
 }
 
 function handleKey(e) {
-  if (e.key === 'Enter' && !e.shiftKey) {
+  if (e.key === "Enter" && !e.shiftKey) {
     e.preventDefault();
     sendMessage();
   }
 }
 
 function autoResize(el) {
-  el.style.height = 'auto';
-  el.style.height = Math.min(el.scrollHeight, 140) + 'px';
+  el.style.height = "auto";
+  el.style.height = Math.min(el.scrollHeight, 140) + "px";
 }
 
-// ── Start ─────────────────────────────────────────────────────
+// ── Bootstrap ─────────────────────────────────────────────────
 marked.setOptions({ breaks: true, gfm: true });
-initSession().then(() => document.getElementById('input').focus());
+initSession().then(() => document.getElementById("input").focus());
 </script>
 </body>
 </html>
