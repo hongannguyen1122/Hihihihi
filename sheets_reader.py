@@ -27,6 +27,7 @@ CREDS_ENV     = "GOOGLE_CREDENTIALS"          # JSON string (production)
 CREDS_FILE    = os.path.join(os.path.dirname(__file__), "google-credentials.json")  # fallback local
 
 # ── Cột trong sheet (0-indexed) ──────────────────────────────────────────────
+COL_STT        = 0
 COL_MKT_CODE   = 1
 COL_NAME       = 2
 COL_PARTNER    = 3
@@ -47,7 +48,7 @@ COL_PIC        = 17
 COL_STATUS     = 22
 
 # ── In-memory layer ───────────────────────────────────────────────────────────
-# Cấu trúc: {"rows": [...], "idx_mkt": {}, "idx_promo": {}, "idx_tokens": {}, "saved_at": float}
+# Cấu trúc: {"rows": [...], "idx_stt": {}, "idx_mkt": {}, "idx_promo": {}, "idx_tokens": {}, "saved_at": float}
 _mem: Optional[dict] = None
 
 
@@ -99,16 +100,22 @@ def _cell(row: tuple, idx: int) -> str:
 
 def _build_indexes(rows: list[dict]) -> dict:
     """
-    Xây dựng 3 index để tìm kiếm nhanh:
+    Xây dựng 4 index để tìm kiếm nhanh:
+      idx_stt    : số thứ tự (cột A)    → row index (exact lookup)
       idx_mkt    : mkt_code chuẩn hoá  → row index (exact lookup)
       idx_promo  : promo_code chuẩn hoá → row index (exact lookup)
       idx_tokens : token từ name/partner/alt_name → [row indices] (keyword lookup)
     """
+    idx_stt: dict[str, int]             = {}
     idx_mkt: dict[str, int]             = {}
     idx_promo: dict[str, int]           = {}
     idx_tokens: dict[str, list[int]]    = {}
 
     for i, p in enumerate(rows):
+        stt = p.get("stt", "").strip()
+        if stt and stt.isdigit():
+            idx_stt[stt] = i
+
         mkt = _normalize(p.get("mkt_code", ""))
         if mkt:
             idx_mkt[mkt] = i
@@ -128,7 +135,7 @@ def _build_indexes(rows: list[dict]) -> dict:
             if len(token) >= 2:
                 idx_tokens.setdefault(token, []).append(i)
 
-    return {"idx_mkt": idx_mkt, "idx_promo": idx_promo, "idx_tokens": idx_tokens}
+    return {"idx_stt": idx_stt, "idx_mkt": idx_mkt, "idx_promo": idx_promo, "idx_tokens": idx_tokens}
 
 
 # ── File cache ────────────────────────────────────────────────────────────────
@@ -203,15 +210,17 @@ def _get_cache() -> tuple[list[dict], dict]:
     """
     global _mem
 
-    # Tầng 1: memory
-    if _mem is not None and _is_fresh(_mem["saved_at"]):
-        return _mem["rows"], {k: _mem[k] for k in ("idx_mkt", "idx_promo", "idx_tokens")}
+    # Tầng 1: memory (bỏ qua nếu thiếu index key — cache cũ chưa có idx_stt)
+    _IDX_KEYS = ("idx_stt", "idx_mkt", "idx_promo", "idx_tokens")
+    if _mem is not None and _is_fresh(_mem["saved_at"]) and all(k in _mem for k in _IDX_KEYS):
+        return _mem["rows"], {k: _mem[k] for k in _IDX_KEYS}
 
-    # Tầng 2: file
+    # Tầng 2: file (bỏ qua nếu thiếu index key — cache cũ chưa có idx_stt)
+    _IDX_KEYS = ("idx_stt", "idx_mkt", "idx_promo", "idx_tokens")
     file_data = _load_file_cache()
-    if file_data:
+    if file_data and all(k in file_data for k in _IDX_KEYS):
         _mem = file_data
-        return _mem["rows"], {k: _mem[k] for k in ("idx_mkt", "idx_promo", "idx_tokens")}
+        return _mem["rows"], {k: _mem[k] for k in _IDX_KEYS}
 
     # Tầng 3: Google Drive API
     rows = _fetch_from_api()
@@ -264,6 +273,7 @@ def _fetch_from_api() -> list[dict]:
         end   = _parse_date(row[COL_END_DATE]   if len(row) > COL_END_DATE   else None)
 
         promos.append({
+            "stt":        _cell(row, COL_STT),
             "mkt_code":   mkt_code,
             "name":       name,
             "partner":    _cell(row, COL_PARTNER),
@@ -309,6 +319,7 @@ def search_promotions(query: str, transaction_date: Optional[str] = None) -> lis
     q_norm   = _normalize(query)
     q_words  = [w for w in q_norm.split() if w]
     tx_date  = _parse_date(transaction_date) if transaction_date else None
+    idx_stt    = indexes["idx_stt"]
     idx_mkt    = indexes["idx_mkt"]
     idx_promo  = indexes["idx_promo"]
     idx_tokens = indexes["idx_tokens"]
@@ -322,6 +333,11 @@ def search_promotions(query: str, transaction_date: Optional[str] = None) -> lis
             score_map[i] = [0.0, []]
         score_map[i][0] += delta
         score_map[i][1].append(reason)
+
+    # STT (số thứ tự cột A): tìm token số nguyên trong query
+    for w in q_words:
+        if w.isdigit() and w in idx_stt:
+            _add(idx_stt[w], 45, f"Số thứ tự khớp: {w}")
 
     # Promo code: bất kỳ promo code nào xuất hiện trong query
     for code, i in idx_promo.items():
