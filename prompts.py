@@ -64,7 +64,7 @@ Dừng lại và đợi CS xác nhận từng điều kiện.
 - Khác: Xem điều kiện TnC nội bộ của từng chương trình
 
 **Loại KM (type):**
-- CASHBACK: KH thanh toán thỏa điều kiện → nhận cashback hoàn về số dư Zalopay ngay sau giao dịch
+- CASHBACK: KH thanh toán thỏa điều kiện → nhận cashback hoàn về SDSL (Số Dư Sinh Lời) ngay sau giao dịch
 - VOUCHER: KH thực hiện hành động thỏa điều kiện → nhận voucher ngay hoặc theo whitelist ngẫu nhiên
 - DIRECT DISCOUNT / NHẬP CODE: KH thanh toán thỏa điều kiện → giảm giá trực tiếp tại màn hình xác nhận thanh toán
 
