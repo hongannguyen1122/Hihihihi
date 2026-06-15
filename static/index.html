@@ -203,7 +203,7 @@
     flex-shrink: 0;
   }
   .msg.ai .avatar   { background: #e8f7ef; }
-  .msg.user .avatar { background: #00B14F; color: #fff; }
+  .msg.user .avatar { background: transparent; overflow: hidden; padding: 0; }
 
   .bubble {
     padding: 10px 14px;
@@ -737,7 +737,15 @@ function _renderMsgEl(role, text, imageDataUrl, timestamp, hasImagePlaceholder, 
 
   const avatar = document.createElement("div");
   avatar.className = "avatar";
-  avatar.textContent = role === "ai" ? "🤖" : "🐮";
+  if (role === "ai") {
+    avatar.textContent = "🤖";
+  } else {
+    const img = document.createElement("img");
+    img.src = "/static/avatar-cs.webp";
+    img.alt = "CS";
+    img.style.cssText = "width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;";
+    avatar.appendChild(img);
+  }
 
   const content = document.createElement("div");
   const bubble  = document.createElement("div");
