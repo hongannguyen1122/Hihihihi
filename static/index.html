@@ -203,7 +203,7 @@
     flex-shrink: 0;
   }
   .msg.ai .avatar   { background: #e8f7ef; }
-  .msg.user .avatar { background: transparent; overflow: hidden; padding: 0; }
+  .msg.user .avatar { background: #00B14F; color: #fff; }
 
   .bubble {
     padding: 10px 14px;
@@ -415,7 +415,7 @@
 <!-- ── Sidebar ────────────────────────────────────────────────── -->
 <div class="sidebar">
   <div class="sidebar-header">
-    <div class="sidebar-logo">💬 Zalopay CS</div>
+    <div class="sidebar-logo">💬 Zalopay CS Promotion Assistant</div>
     <button class="btn-new-chat" onclick="newSession()">✏️ Cuộc hội thoại mới</button>
   </div>
   <div class="sidebar-section-label">Lịch sử hội thoại</div>
@@ -737,15 +737,7 @@ function _renderMsgEl(role, text, imageDataUrl, timestamp, hasImagePlaceholder, 
 
   const avatar = document.createElement("div");
   avatar.className = "avatar";
-  if (role === "ai") {
-    avatar.textContent = "🤖";
-  } else {
-    const img = document.createElement("img");
-    img.src = "/static/avatar-cs.webp";
-    img.alt = "CS";
-    img.style.cssText = "width:100%;height:100%;object-fit:cover;border-radius:50%;display:block;";
-    avatar.appendChild(img);
-  }
+  avatar.textContent = role === "ai" ? "🤖" : "🐮";
 
   const content = document.createElement("div");
   const bubble  = document.createElement("div");
