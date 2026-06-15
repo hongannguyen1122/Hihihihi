@@ -157,7 +157,7 @@ def index():
 
 @app.get("/health")
 def health():
-    return jsonify({"status": "healthy", "agent": "ZaloPay CS Promotion Assistant"})
+    return jsonify({"status": "healthy", "agent": "Zalopay CS Promotion Assistant"})
 
 
 @app.get("/api/recent")
@@ -203,7 +203,7 @@ def api_invocations():
 
 def run_cli():
     print("=" * 60)
-    print("  ZaloPay CS Promotion Assistant - CLI Mode")
+    print("  Zalopay CS Promotion Assistant - CLI Mode")
     print("=" * 60)
     print("Nhập thông tin ticket CS (gõ 'exit' để thoát, 'new' để reset session)")
     print("-" * 60)
@@ -243,5 +243,5 @@ if __name__ == "__main__":
         run_cli()
     else:
         port = int(os.getenv("PORT", "8080"))
-        print(f"ZaloPay CS Agent  →  http://0.0.0.0:{port}")
+        print(f"Zalopay CS Agent  →  http://0.0.0.0:{port}")
         app.run(host="0.0.0.0", port=port, debug=False)

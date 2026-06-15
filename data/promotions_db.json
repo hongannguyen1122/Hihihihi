@@ -3,23 +3,23 @@
     {
       "id": "ZLPMUASAM_2026_Q2",
       "codename": "ZLPMUASAM",
-      "name": "Ưu đãi thanh toán ZaloPay - Go! & Big C",
-      "description": "Giảm tiền khi mua sắm qua Zalo OA 'Đại siêu thị Go! & Big C' hoặc GO! App và thanh toán bằng ZaloPay với mã ZLPMUASAM",
+      "name": "Ưu đãi thanh toán Zalopay - Go! & Big C",
+      "description": "Giảm tiền khi mua sắm qua Zalo OA 'Đại siêu thị Go! & Big C' hoặc GO! App và thanh toán bằng Zalopay với mã ZLPMUASAM",
       "start_date": "2026-04-01",
       "end_date": "2026-06-30",
       "status": "active",
       "type": "discount_voucher",
       "conditions": [
         "Mua sắm qua Zalo OA 'Đại siêu thị Go! & Big C' hoặc GO! App",
-        "Thanh toán bằng ZaloPay",
+        "Thanh toán bằng Zalopay",
         "Nhập mã ZLPMUASAM tại bước thanh toán",
         "Giá trị đơn hàng tối thiểu 700.000đ (để nhận giảm 15.000đ) hoặc 1.200.000đ (để nhận giảm 25.000đ)",
         "Xác nhận giao dịch thành công",
-        "Chưa dùng quá 2 lần trong tháng (tính theo tài khoản ZaloPay / thẻ / tài khoản ngân hàng / thiết bị)"
+        "Chưa dùng quá 2 lần trong tháng (tính theo tài khoản Zalopay / thẻ / tài khoản ngân hàng / thiết bị)"
       ],
       "exclusions": [
         "Không áp dụng cho sản phẩm dược phẩm",
-        "Không kết hợp với các chương trình khuyến mãi khác trên ZaloPay",
+        "Không kết hợp với các chương trình khuyến mãi khác trên Zalopay",
         "Không áp dụng cho nhân viên VNG và các công ty liên kết"
       ],
       "reward": "Giảm 15.000đ cho đơn từ 700.000đ | Giảm 25.000đ cho đơn từ 1.200.000đ",
@@ -46,26 +46,26 @@
     {
       "id": "GAMEVERSE_2025_06",
       "codename": "GAMEVERSE",
-      "name": "ZaloPay GAMEVERSE - Vũ Trụ Trò Chơi",
-      "description": "Chương trình tặng mã dự thưởng cho khách hàng thanh toán game qua ZaloPay",
+      "name": "Zalopay GAMEVERSE - Vũ Trụ Trò Chơi",
+      "description": "Chương trình tặng mã dự thưởng cho khách hàng thanh toán game qua Zalopay",
       "start_date": "2025-06-01",
       "end_date": "2025-06-30",
       "status": "active",
       "type": "game_reward",
       "conditions": [
-        "Giao dịch thanh toán game thành công qua ZaloPay",
+        "Giao dịch thanh toán game thành công qua Zalopay",
         "Giá trị giao dịch tối thiểu 50.000 VNĐ",
         "User đã xác thực eKYC",
         "Tài khoản không bị khóa/hạn chế",
         "Chưa nhận mã trong ngày (quota: 1 mã/user/ngày)",
-        "Ứng dụng ZaloPay phiên bản 6.0 trở lên"
+        "Ứng dụng Zalopay phiên bản 6.0 trở lên"
       ],
       "exclusions": [
         "Giao dịch từ ví doanh nghiệp",
         "Thanh toán qua liên kết ngân hàng bị lỗi sau đó hoàn tiền",
         "User đã sử dụng chương trình khuyến mãi trùng lặp cùng ngày"
       ],
-      "reward": "Mã dự thưởng quà ZaloPay",
+      "reward": "Mã dự thưởng quà Zalopay",
       "quota_per_user": "1 mã/ngày",
       "quota_total": 50000,
       "processing_time": "Ngay sau giao dịch thành công (tối đa 15 phút)",
@@ -95,11 +95,11 @@
       "status": "active",
       "type": "cashback",
       "conditions": [
-        "Thanh toán hóa đơn điện, nước, internet, truyền hình qua ZaloPay",
+        "Thanh toán hóa đơn điện, nước, internet, truyền hình qua Zalopay",
         "Giá trị hóa đơn tối thiểu 100.000 VNĐ",
         "Áp dụng tối đa 2 lần/tháng/user",
-        "User có tài khoản ZaloPay đang hoạt động",
-        "Thanh toán bằng số dư ví ZaloPay hoặc ZaloPay+ (không áp dụng liên kết thẻ)"
+        "User có tài khoản Zalopay đang hoạt động",
+        "Thanh toán bằng số dư ví Zalopay hoặc Zalopay+ (không áp dụng liên kết thẻ)"
       ],
       "exclusions": [
         "Thanh toán hóa đơn doanh nghiệp",
@@ -129,7 +129,7 @@
     {
       "id": "BIRTHDAY_VIP_2025",
       "codename": "BIRTHDAY_VIP",
-      "name": "Quà sinh nhật VIP ZaloPay 2025",
+      "name": "Quà sinh nhật VIP Zalopay 2025",
       "description": "Tặng voucher 100.000 VNĐ cho khách hàng VIP nhân dịp sinh nhật",
       "start_date": "2025-01-01",
       "end_date": "2025-12-31",
@@ -147,7 +147,7 @@
         "Thông tin sinh nhật trên CCCD khác với thông tin khai báo",
         "Tài khoản doanh nghiệp"
       ],
-      "reward": "Voucher ZaloPay 100.000 VNĐ (áp dụng cho mọi giao dịch từ 200.000 VNĐ)",
+      "reward": "Voucher Zalopay 100.000 VNĐ (áp dụng cho mọi giao dịch từ 200.000 VNĐ)",
       "quota_per_user": "1 lần/năm",
       "quota_total": 0,
       "processing_time": "Voucher gửi vào ngày đầu tiên của tháng sinh nhật",
@@ -170,7 +170,7 @@
     {
       "id": "NEWUSER_WELCOME_2025",
       "codename": "NEWUSER_WELCOME",
-      "name": "Chào mừng thành viên mới ZaloPay 2025",
+      "name": "Chào mừng thành viên mới Zalopay 2025",
       "description": "Tặng 50.000 VNĐ vào ví cho khách hàng mới đăng ký và hoàn thành eKYC",
       "start_date": "2025-01-01",
       "end_date": "2025-12-31",
@@ -180,15 +180,15 @@
         "Tài khoản mới tạo trong vòng 30 ngày",
         "Hoàn thành xác thực eKYC thành công",
         "Thực hiện giao dịch đầu tiên thành công (bất kỳ loại)",
-        "Số điện thoại chưa từng đăng ký ZaloPay trước đây",
-        "CCCD/CMND chưa từng được dùng đăng ký tài khoản ZaloPay"
+        "Số điện thoại chưa từng đăng ký Zalopay trước đây",
+        "CCCD/CMND chưa từng được dùng đăng ký tài khoản Zalopay"
       ],
       "exclusions": [
-        "Số điện thoại đã từng đăng ký ZaloPay và xóa tài khoản",
+        "Số điện thoại đã từng đăng ký Zalopay và xóa tài khoản",
         "CCCD đã được liên kết với tài khoản khác",
         "Giao dịch đầu tiên bị hoàn tiền hoặc thất bại"
       ],
-      "reward": "50.000 VNĐ vào số dư ví ZaloPay",
+      "reward": "50.000 VNĐ vào số dư ví Zalopay",
       "quota_per_user": "1 lần/tài khoản",
       "quota_total": 0,
       "processing_time": "Trong vòng 24h sau giao dịch đầu tiên thành công",
@@ -212,13 +212,13 @@
       "id": "TRANSFER_LUCKY_2025_06",
       "codename": "TRANSFER_LUCKY",
       "name": "Chuyển tiền may mắn tháng 6/2025",
-      "description": "Cơ hội nhận thưởng tiền mặt khi chuyển tiền qua ZaloPay trong tháng 6",
+      "description": "Cơ hội nhận thưởng tiền mặt khi chuyển tiền qua Zalopay trong tháng 6",
       "start_date": "2025-06-01",
       "end_date": "2025-06-30",
       "status": "active",
       "type": "lucky_draw",
       "conditions": [
-        "Chuyển tiền thành công qua ZaloPay (P2P)",
+        "Chuyển tiền thành công qua Zalopay (P2P)",
         "Giá trị mỗi lần chuyển tối thiểu 200.000 VNĐ",
         "Mỗi giao dịch hợp lệ = 1 lượt quay",
         "Tối đa 5 lượt quay/ngày",

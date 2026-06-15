@@ -17,7 +17,7 @@ def format_recent_block(recents: list[dict]) -> str:
 → KHÔNG liệt kê danh sách này trong câu trả lời trừ khi CS hỏi hoặc không có CT nào khớp."""
 
 
-SYSTEM_PROMPT = """Bạn là AI Promotion Assistant của ZaloPay, hỗ trợ CS xử lý ticket chương trình khuyến mãi (CTKM).
+SYSTEM_PROMPT = """Bạn là AI Promotion Assistant của Zalopay, hỗ trợ CS xử lý ticket chương trình khuyến mãi (CTKM).
 
 ## QUY TRÌNH (4 bước, theo đúng thứ tự)
 
@@ -45,7 +45,7 @@ Dừng lại và đợi CS xác nhận từng điều kiện.
 - KHÔNG bịa CTKM, KHÔNG kết luận khi CS chưa xác nhận
 - Độ khớp < 60% → hỏi thêm trước khi hiện checklist
 - Đủ điều kiện + chưa nhận ưu đãi → Cần tạo Jira kiểm tra với bộ phận liên quan
-- Xưng "ZaloPay", gọi khách "bạn", phản hồi 3-5 câu
+- Xưng "Zalopay", gọi khách "bạn", phản hồi 3-5 câu
 
 ## XỬ LÝ ẢNH (khi CS đính kèm screenshot)
 - Phân tích ảnh để trích xuất: mã CTKM/voucher, mã lỗi, ngày giờ giao dịch, số tiền, trạng thái đơn hàng
@@ -71,21 +71,21 @@ Chương trình: {promotion_name}
 Hãy:
 1. Đưa ra kết luận cuối cùng (ĐỦ / KHÔNG ĐỦ điều kiện)
 2. Đề xuất hướng xử lý phù hợp theo quy trình
-3. Sinh phản hồi khách hàng theo chuẩn ZaloPay
+3. Sinh phản hồi khách hàng theo chuẩn Zalopay
 """
 
-CUSTOMER_RESPONSE_NOT_ELIGIBLE = """ZaloPay đã xem xét thông tin và ghi nhận giao dịch của bạn liên quan đến {promotion_name}.
+CUSTOMER_RESPONSE_NOT_ELIGIBLE = """Zalopay đã xem xét thông tin và ghi nhận giao dịch của bạn liên quan đến {promotion_name}.
 
 Sau khi kiểm tra, {reason}. Vì vậy, giao dịch này chưa đáp ứng điều kiện để nhận ưu đãi từ chương trình.
 
-ZaloPay thông cảm với sự bất tiện này. Nếu bạn có thắc mắc hoặc cần thêm hỗ trợ, ZaloPay luôn sẵn sàng đồng hành cùng bạn."""
+Zalopay thông cảm với sự bất tiện này. Nếu bạn có thắc mắc hoặc cần thêm hỗ trợ, Zalopay luôn sẵn sàng đồng hành cùng bạn."""
 
-CUSTOMER_RESPONSE_ELIGIBLE_PENDING = """ZaloPay đã ghi nhận phản ánh của bạn về chương trình {promotion_name}.
+CUSTOMER_RESPONSE_ELIGIBLE_PENDING = """Zalopay đã ghi nhận phản ánh của bạn về chương trình {promotion_name}.
 
-ZaloPay đã chuyển thông tin đến bộ phận kỹ thuật để kiểm tra và xử lý trong thời gian sớm nhất (thông thường trong vòng {processing_time}). ZaloPay sẽ phản hồi bạn ngay khi có kết quả.
+Zalopay đã chuyển thông tin đến bộ phận kỹ thuật để kiểm tra và xử lý trong thời gian sớm nhất (thông thường trong vòng {processing_time}). Zalopay sẽ phản hồi bạn ngay khi có kết quả.
 
-Cảm ơn bạn đã tin tưởng sử dụng ZaloPay!"""
+Cảm ơn bạn đã tin tưởng sử dụng Zalopay!"""
 
-CUSTOMER_RESPONSE_RESOLVED = """ZaloPay đã xử lý và {reward} đã được ghi nhận vào tài khoản của bạn.
+CUSTOMER_RESPONSE_RESOLVED = """Zalopay đã xử lý và {reward} đã được ghi nhận vào tài khoản của bạn.
 
-Bạn có thể kiểm tra trong mục {location} trên ứng dụng ZaloPay. Nếu cần thêm hỗ trợ, ZaloPay luôn sẵn sàng đồng hành cùng bạn."""
+Bạn có thể kiểm tra trong mục {location} trên ứng dụng Zalopay. Nếu cần thêm hỗ trợ, Zalopay luôn sẵn sàng đồng hành cùng bạn."""

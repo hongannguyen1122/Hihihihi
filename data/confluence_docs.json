@@ -4,7 +4,7 @@
       "id": "DOC_GAMEVERSE_SETUP",
       "page_id": "ZALOPAY_PROMO/GAMEVERSE_2025_Q2_SETUP",
       "title": "GAMEVERSE 2025 Q2 - Setup & Vận hành",
-      "content": "GAMEVERSE là chương trình tặng mã dự thưởng cho người dùng thanh toán game qua ZaloPay. Cơ chế: sau mỗi giao dịch game thành công >= 50k, hệ thống tự động phát mã dự thưởng vào mục Quà của ứng dụng ZaloPay trong vòng 15 phút. Nếu sau 15 phút user không nhận được: kiểm tra error log GAMEVERSE_ENGINE. Mã lỗi GV005 = lỗi hệ thống cần Dev xử lý gấp. Danh mục game áp dụng: tất cả merchant có category_id = GAME_PUBLISHER. Lưu ý: user phải mở app xem thông báo mới kích hoạt được mã.",
+      "content": "GAMEVERSE là chương trình tặng mã dự thưởng cho người dùng thanh toán game qua Zalopay. Cơ chế: sau mỗi giao dịch game thành công >= 50k, hệ thống tự động phát mã dự thưởng vào mục Quà của ứng dụng Zalopay trong vòng 15 phút. Nếu sau 15 phút user không nhận được: kiểm tra error log GAMEVERSE_ENGINE. Mã lỗi GV005 = lỗi hệ thống cần Dev xử lý gấp. Danh mục game áp dụng: tất cả merchant có category_id = GAME_PUBLISHER. Lưu ý: user phải mở app xem thông báo mới kích hoạt được mã.",
       "last_updated": "2025-06-01",
       "owner": "CS Ops Team",
       "keywords": ["gameverse", "game", "mã dự thưởng", "setup", "vận hành"]
@@ -13,7 +13,7 @@
       "id": "DOC_CASHBACK_SETUP",
       "page_id": "ZALOPAY_PROMO/CASHBACK_Q2_2025_SETUP",
       "title": "CASHBACK Q2/2025 - Hoàn tiền hóa đơn",
-      "content": "Chương trình hoàn tiền hóa đơn Q2/2025. Cơ chế hoàn tiền: batch job chạy lúc 2:00 AM hàng ngày, xử lý tất cả giao dịch hóa đơn ngày hôm trước đủ điều kiện. Thời gian chờ tối đa: 24h sau giao dịch. Chú ý: phương thức thanh toán phải là ZaloPay balance hoặc ZaloPay+, KHÔNG áp dụng linked bank account. Danh mục hóa đơn: EVN (điện), nước, Viettel/Vnpt (internet/truyền hình). Quota reset: ngày 1 hàng tháng lúc 00:00.",
+      "content": "Chương trình hoàn tiền hóa đơn Q2/2025. Cơ chế hoàn tiền: batch job chạy lúc 2:00 AM hàng ngày, xử lý tất cả giao dịch hóa đơn ngày hôm trước đủ điều kiện. Thời gian chờ tối đa: 24h sau giao dịch. Chú ý: phương thức thanh toán phải là Zalopay balance hoặc Zalopay+, KHÔNG áp dụng linked bank account. Danh mục hóa đơn: EVN (điện), nước, Viettel/Vnpt (internet/truyền hình). Quota reset: ngày 1 hàng tháng lúc 00:00.",
       "last_updated": "2025-04-01",
       "owner": "CS Ops Team",
       "keywords": ["cashback", "hoàn tiền", "hóa đơn", "batch", "setup"]
@@ -30,8 +30,8 @@
     {
       "id": "DOC_RESPONSE_TEMPLATE",
       "page_id": "ZALOPAY_CS/RESPONSE_TEMPLATES",
-      "title": "Mẫu phản hồi khách hàng chuẩn ZaloPay",
-      "content": "Template 1 - Không đủ điều kiện: 'ZaloPay đã kiểm tra thông tin và ghi nhận [tên CTKM] có điều kiện áp dụng là [điều kiện]. Hiện tại giao dịch của bạn [lý do không đủ điều kiện]. ZaloPay thông cảm với sự bất tiện này và luôn sẵn sàng hỗ trợ bạn trong các chương trình phù hợp.' Template 2 - Đủ điều kiện, chờ xử lý: 'ZaloPay đã ghi nhận phản ánh của bạn về [tên CTKM]. ZaloPay đã chuyển thông tin đến bộ phận kỹ thuật để kiểm tra và xử lý trong vòng [thời gian]. ZaloPay sẽ phản hồi bạn sớm nhất có thể.' Template 3 - Đã xử lý xong: 'ZaloPay đã xử lý và ưu đãi [tên ưu đãi] đã được ghi nhận vào tài khoản của bạn. Cảm ơn bạn đã tin tưởng và sử dụng ZaloPay!'",
+      "title": "Mẫu phản hồi khách hàng chuẩn Zalopay",
+      "content": "Template 1 - Không đủ điều kiện: 'Zalopay đã kiểm tra thông tin và ghi nhận [tên CTKM] có điều kiện áp dụng là [điều kiện]. Hiện tại giao dịch của bạn [lý do không đủ điều kiện]. Zalopay thông cảm với sự bất tiện này và luôn sẵn sàng hỗ trợ bạn trong các chương trình phù hợp.' Template 2 - Đủ điều kiện, chờ xử lý: 'Zalopay đã ghi nhận phản ánh của bạn về [tên CTKM]. Zalopay đã chuyển thông tin đến bộ phận kỹ thuật để kiểm tra và xử lý trong vòng [thời gian]. Zalopay sẽ phản hồi bạn sớm nhất có thể.' Template 3 - Đã xử lý xong: 'Zalopay đã xử lý và ưu đãi [tên ưu đãi] đã được ghi nhận vào tài khoản của bạn. Cảm ơn bạn đã tin tưởng và sử dụng Zalopay!'",
       "last_updated": "2025-03-01",
       "owner": "CS Quality Team",
       "keywords": ["template", "phản hồi", "mẫu", "văn phong", "reply template"]
@@ -39,8 +39,8 @@
     {
       "id": "DOC_VIP_SYSTEM",
       "page_id": "ZALOPAY_MEMBER/VIP_SYSTEM",
-      "title": "Hệ thống hạng thành viên VIP ZaloPay",
-      "content": "Hạng thành viên ZaloPay: Standard (mặc định), Silver (tích lũy >= 2tr/tháng hoặc 5 giao dịch/tháng), Gold (tích lũy >= 10tr/tháng hoặc 20 giao dịch/tháng), Platinum (tích lũy >= 50tr/tháng hoặc 50 giao dịch/tháng). Hạng được cập nhật vào ngày 1 hàng tháng dựa trên tháng trước. Hạng hiện tại được giữ tối thiểu 2 tháng. Kiểm tra hạng user: CRM > User Profile > Membership.",
+      "title": "Hệ thống hạng thành viên VIP Zalopay",
+      "content": "Hạng thành viên Zalopay: Standard (mặc định), Silver (tích lũy >= 2tr/tháng hoặc 5 giao dịch/tháng), Gold (tích lũy >= 10tr/tháng hoặc 20 giao dịch/tháng), Platinum (tích lũy >= 50tr/tháng hoặc 50 giao dịch/tháng). Hạng được cập nhật vào ngày 1 hàng tháng dựa trên tháng trước. Hạng hiện tại được giữ tối thiểu 2 tháng. Kiểm tra hạng user: CRM > User Profile > Membership.",
       "last_updated": "2025-01-01",
       "owner": "Product Team",
       "keywords": ["vip", "hạng", "membership", "silver", "gold", "platinum", "standard"]

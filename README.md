@@ -1,6 +1,6 @@
-# ZaloPay CS Promotion Assistant
+# Zalopay CS Promotion Assistant
 
-AI Agent hỗ trợ Customer Service ZaloPay xử lý các yêu cầu liên quan đến chương trình khuyến mãi (CTKM).
+AI Agent hỗ trợ Customer Service Zalopay xử lý các yêu cầu liên quan đến chương trình khuyến mãi (CTKM).
 
 ## Tính năng
 
@@ -10,7 +10,7 @@ AI Agent hỗ trợ Customer Service ZaloPay xử lý các yêu cầu liên quan
 | 2 | Tìm kiếm CTKM từ Promotion DB, FAQ CS, Confluence |
 | 3 | Hiển thị checklist điều kiện cho CS xác nhận |
 | 4 | Phân tích eligibility & đề xuất hướng xử lý |
-| 5 | Sinh phản hồi khách hàng theo chuẩn ZaloPay |
+| 5 | Sinh phản hồi khách hàng theo chuẩn Zalopay |
 
 ## Cài đặt
 
@@ -44,20 +44,20 @@ Ví dụ tương tác:
 
 [AI] 🔍 Đã tìm thấy CTKM phù hợp: GAMEVERSE (Độ khớp: 95%)
      ...
-     📋 CHECKLIST ĐIỀU KIỆN - ZaloPay GAMEVERSE
-     □ [1] Giao dịch thanh toán game thành công qua ZaloPay
+     📋 CHECKLIST ĐIỀU KIỆN - Zalopay GAMEVERSE
+     □ [1] Giao dịch thanh toán game thành công qua Zalopay
      □ [2] Giá trị giao dịch tối thiểu 50.000 VNĐ
      □ [3] User đã xác thực eKYC
      □ [4] Tài khoản không bị khóa/hạn chế
      □ [5] Chưa nhận mã trong ngày (quota: 1 mã/user/ngày)
-     □ [6] Ứng dụng ZaloPay phiên bản 6.0 trở lên
+     □ [6] Ứng dụng Zalopay phiên bản 6.0 trở lên
      👉 CS vui lòng xác nhận từng điều kiện...
 
 [CS] [1]✅ [2]✅ [3]✅ [4]✅ [5]✅ [6] chưa biết
 
 [AI] ⚖️ KẾT LUẬN: Cần xác thêm điều kiện [6]...
      ...
-     💬 PHẢN HỒI KHÁCH HÀNG: ZaloPay đã ghi nhận...
+     💬 PHẢN HỒI KHÁCH HÀNG: Zalopay đã ghi nhận...
 ```
 
 ## Deploy lên GreenNode AgentBase
@@ -104,7 +104,7 @@ zalopay-cs-agent/
 - Không tự suy diễn hoặc bịa thông tin CTKM
 - Bắt buộc yêu cầu CS xác nhận checklist trước khi kết luận
 - Nếu đủ điều kiện nhưng chưa nhận ưu đãi → đề xuất tạo Jira Dev
-- Phản hồi khách hàng theo chuẩn: xưng ZaloPay, gọi khách là "bạn"
+- Phản hồi khách hàng theo chuẩn: xưng Zalopay, gọi khách là "bạn"
 
 ## Mở rộng production
 

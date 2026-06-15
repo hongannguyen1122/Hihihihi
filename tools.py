@@ -385,7 +385,7 @@ def generate_customer_response(
     processing_time: Optional[str] = None,
     reward_description: Optional[str] = None
 ) -> str:
-    """Sinh nội dung phản hồi khách hàng theo chuẩn văn phong ZaloPay.
+    """Sinh nội dung phản hồi khách hàng theo chuẩn văn phong Zalopay.
 
     Args:
         promotion_name: Tên chương trình khuyến mãi
@@ -399,20 +399,20 @@ def generate_customer_response(
     """
     if is_eligible:
         response = (
-            f"ZaloPay đã ghi nhận phản ánh của bạn về chương trình {promotion_name}.\n\n"
-            f"ZaloPay đã chuyển thông tin đến bộ phận kỹ thuật để kiểm tra và xử lý "
+            f"Zalopay đã ghi nhận phản ánh của bạn về chương trình {promotion_name}.\n\n"
+            f"Zalopay đã chuyển thông tin đến bộ phận kỹ thuật để kiểm tra và xử lý "
             f"trong thời gian sớm nhất"
             + (f" (thông thường trong vòng {processing_time})" if processing_time else "")
-            + ". ZaloPay sẽ phản hồi bạn ngay khi có kết quả.\n\n"
-            "Cảm ơn bạn đã tin tưởng sử dụng ZaloPay!"
+            + ". Zalopay sẽ phản hồi bạn ngay khi có kết quả.\n\n"
+            "Cảm ơn bạn đã tin tưởng sử dụng Zalopay!"
         )
     else:
         response = (
-            f"ZaloPay đã kiểm tra thông tin và ghi nhận giao dịch của bạn liên quan đến "
+            f"Zalopay đã kiểm tra thông tin và ghi nhận giao dịch của bạn liên quan đến "
             f"chương trình {promotion_name}.\n\n"
             f"{resolution_summary}\n\n"
-            "ZaloPay thông cảm với sự bất tiện này. Nếu bạn có thắc mắc hoặc cần thêm hỗ trợ, "
-            "ZaloPay luôn sẵn sàng đồng hành cùng bạn."
+            "Zalopay thông cảm với sự bất tiện này. Nếu bạn có thắc mắc hoặc cần thêm hỗ trợ, "
+            "Zalopay luôn sẵn sàng đồng hành cùng bạn."
         )
 
     return json.dumps({
@@ -420,7 +420,7 @@ def generate_customer_response(
         "customer_response": response,
         "char_count": len(response),
         "tone_check": {
-            "uses_zalopay_pronoun": "ZaloPay" in response,
+            "uses_zalopay_pronoun": "Zalopay" in response,
             "uses_ban_pronoun": "bạn" in response,
             "has_closing": "đồng hành" in response or "Cảm ơn" in response,
             "professional": True

@@ -36,7 +36,7 @@
       "id": "FAQ_005",
       "category": "Hoàn tiền",
       "question": "Khách hàng chưa nhận được tiền hoàn?",
-      "answer": "1. Xác nhận thời gian hoàn tiền theo quy định CTKM (thường 24-48h). 2. Kiểm tra xem giao dịch gốc có thực sự đủ điều kiện không. 3. Nếu đã quá thời gian và đủ điều kiện: tạo Jira cho Dev kiểm tra hệ thống hoàn tiền. 4. Tiền hoàn sẽ vào số dư ví ZaloPay, không phải tài khoản ngân hàng.",
+      "answer": "1. Xác nhận thời gian hoàn tiền theo quy định CTKM (thường 24-48h). 2. Kiểm tra xem giao dịch gốc có thực sự đủ điều kiện không. 3. Nếu đã quá thời gian và đủ điều kiện: tạo Jira cho Dev kiểm tra hệ thống hoàn tiền. 4. Tiền hoàn sẽ vào số dư ví Zalopay, không phải tài khoản ngân hàng.",
       "resolution_path": "check_time → check_conditions → create_jira",
       "keywords": ["hoàn tiền", "cashback", "tiền hoàn", "chưa nhận tiền hoàn"]
     },
@@ -59,8 +59,8 @@
     {
       "id": "FAQ_008",
       "category": "Văn phong phản hồi",
-      "question": "Cách viết phản hồi cho khách hàng theo chuẩn ZaloPay?",
-      "answer": "Nguyên tắc: 1. Luôn xưng 'ZaloPay' và gọi khách là 'bạn'. 2. Thân thiện, chuyên nghiệp, ngắn gọn. 3. Cảm ơn sự tin tưởng khi kết thúc. 4. Đưa ra giải pháp cụ thể, không mơ hồ. 5. Không hứa hẹn những điều không chắc chắn. Mẫu: 'ZaloPay đã [hành động]. [Thông tin/kết quả]. Nếu cần thêm hỗ trợ, ZaloPay luôn sẵn sàng đồng hành cùng bạn.'",
+      "question": "Cách viết phản hồi cho khách hàng theo chuẩn Zalopay?",
+      "answer": "Nguyên tắc: 1. Luôn xưng 'Zalopay' và gọi khách là 'bạn'. 2. Thân thiện, chuyên nghiệp, ngắn gọn. 3. Cảm ơn sự tin tưởng khi kết thúc. 4. Đưa ra giải pháp cụ thể, không mơ hồ. 5. Không hứa hẹn những điều không chắc chắn. Mẫu: 'Zalopay đã [hành động]. [Thông tin/kết quả]. Nếu cần thêm hỗ trợ, Zalopay luôn sẵn sàng đồng hành cùng bạn.'",
       "resolution_path": "generate_response_with_template",
       "keywords": ["phản hồi", "văn phong", "reply", "trả lời khách", "nội dung phản hồi"]
     }
